@@ -1,0 +1,70 @@
+<html>
+
+<head>
+	<meta charset="utf8">
+	<title>双人吃豆游戏</title>
+
+	<link rel="shortcut icon" href="favicon.png">
+	<link rel="stylesheet" href="./static/style/index.css">
+	<script type="text/javascript">
+		
+	</script>
+</head>
+
+<body>
+	<!-- 导航栏 -->
+	<nav id="navbar">
+		<ul>
+		  <li><a href="#" id="rules-link">规则</a></li>
+		</ul>
+	  </nav>
+	<!-- 规则弹窗 -->
+	<div id="rules-modal" class="modal">
+		<div class="modal-content">
+		  <span class="close" id="close-rules">&times;</span>
+		  <h2>游戏规则</h2>
+		  <p>您将与另一位参与者共同完成吃豆任务。请仔细阅读以下规则：</p>
+		  <ul>
+			<li>每轮游戏，您和对方将合作把地图上的豆吃完。</li>
+			<li>您可以通过键盘上的"↑""↓""←""→"键来控制您的角色移动。</li>
+			<li>游戏没有限时，<strong style="color: red;">越快完成获得越多额外分数</strong>。</li>
+			<li>您和对方每人在吃完地图上总豆数的一半后，<strong>可以选择等待对方完成。或者继续操控角色帮助对方吃豆</strong>。</li>
+			<li>游戏共进行10轮，最终统计总得分。</li>
+			<li>最后收益根据总得分计算，您和对方将<strong style="color: red;">平分收益</strong>。</li>
+		  </ul>
+		  <div class="button-container"> <!-- 添加按钮容器 -->
+			<button id="know-rules" style="display: none;">我已了解</button>
+		  </div>
+	
+		</div>
+	  </div>
+	<div class="wrapper">
+		<div class="mod-panel">
+			<div class="hd">
+				<h1>双人吃豆游戏</h1>
+			</div>
+			<div class="bd">
+				<canvas id="canvas" width="960" height="640">不支持画布</canvas>
+			</div>
+			<div class="ft">
+				<div class="info">
+					<p>按 [空格键] 暂停或继续</p>
+					<p>Press [space] to pause or continue</p>
+				</div>
+
+			</div>
+		</div>
+
+	</div>
+	<script src="./static/script/game.js"></script>
+	<script src="./static/script/index.js"></script>
+	<!-- 在body末尾添加 -->
+	<div id="missionPopup"
+		style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #333; padding: 20px; border-radius: 10px; color: white; text-align: center; z-index: 1000;">
+		<p>您已完成您的任务！</p>
+		<button id="waitBtn" style="margin: 10px; padding: 8px 20px; background: #4CAF50;">等待队友</button>
+		<button id="helpBtn" style="margin: 10px; padding: 8px 20px; background: #2196F3;">帮助队友</button>
+	</div>
+</body>
+
+</html>
