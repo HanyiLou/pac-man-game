@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>心理学实验：双人吃豆游戏</title>
+    <link rel="stylesheet" href="login.css"> <!-- 引入CSS文件 -->
+</head>
+<body>
+    <div id="participant-form">
+        <h1>请填写您的信息！</h1>
+        <form action="match.html" method="POST">
+            <div class="form-item">
+                <p>姓名</p>
+                <input type="text" name="name" placeholder="请输入您的姓名" required>
+            </div>
+            <div class="form-item">
+                <p>性别</p>
+                <label>
+                    <input type="radio" name="gender" value="male" required> 男
+                </label>
+                <label>
+                    <input type="radio" name="gender" value="female"> 女
+                </label>
+                <label>
+                    <input type="radio" name="gender" value="other"> 其他
+                </label>
+            </div>
+            <div class="form-item">
+                <p>出生年月</p>
+                <input type="date" name="birthdate" required>
+            </div>
+            <div class="form-item">
+                <p>被试序号</p>
+                <input type="text" name="participant_id" placeholder="请输入被试序号" required>
+            </div>
+            <button type="submit">开始游戏</button>
+        </form>
+    </div>
+    
+</body>
+</html>
