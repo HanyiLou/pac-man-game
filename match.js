@@ -72,7 +72,7 @@ document.addEventListener("DOMContentLoaded", () => {
             // 2秒后隐藏提示框
             setTimeout(() => {
                 document.getElementById("match-success").style.display = "none"; // 2秒后隐藏提示框
-                window.location.href = 'index.html'; // 跳转到 index.html
+                window.location.href = 'game.html'; // 跳转到 index.html
             }, 2000); // 从提示框显示开始计时
         }, 10000); // 10秒后执行
     });
