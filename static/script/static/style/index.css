@@ -1,0 +1,159 @@
+html{color:#000000;background:#000000}body,div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,pre,code,form,fieldset,legend,input,textarea,p,blockquote,th,td{margin:0;padding:0}table{border-collapse:collapse;border-spacing:0}fieldset,img{border:0}address,caption,cite,code,dfn,em,strong,th,var{font-style:normal;font-weight:normal}ol,ul{list-style:none}caption,th{text-align:left}h1,h3,h3,h4,h5,h6{font-size:100%;font-weight:normal}q:before,q:after{content:''}abbr,acronym{border:0;font-variant:normal}sup{vertical-align:text-top}sub{vertical-align:text-bottom}input,textarea,select{font-family:inherit;font-size:inherit;font-weight:inherit;*font-size:100%}legend{color:#000}
+.wrapper{
+    width: 960px;
+    margin:0 auto;
+    color:#999;
+}
+.mod-panel .hd{
+    padding-top: 10px;
+    line-height: 40px;
+    text-align: center;
+}
+.mod-panel .hd h1{
+    font-size: 30px;
+    font-weight: bold;
+    color: #ffffff;
+}
+.mod-panel canvas{display:block;background: #000;}
+.mod-panel .info{
+    padding: 10px 0;
+    margin-bottom: 5px;
+    line-height: 20px;
+    text-align: center;
+    color: #666;
+}
+.mod-panel .info p{
+    line-height: 20px;
+    font-size: 14px;
+    color: #666;
+}
+.mod-panel .intro{
+    padding: 10px 15px;
+    background: #f8f8f8;
+    border-radius: 5px;
+}
+.mod-panel .intro p{
+    line-height: 22px;
+    text-indent: 2em;
+    font-size: 14px;
+    color: #666;
+}
+
+.mod-button{
+    height: 32px;
+    padding: 15px 0;
+    margin-bottom: 15px;
+    text-align: center;
+}
+.mod-button span,.mod-button a{
+    display: inline-block;
+    height: 28px;
+    vertical-align: middle;
+}
+.mod-button .btn{
+    display: inline-block;
+    height: 26px;
+    padding: 0 12px;
+    line-height: 26px;
+    background-color: #ebf0f4;
+    border: 1px solid #d1d9e0;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 13px;
+    color: #25292e;
+    border-radius: 3px;
+}
+.mod-button .btn:hover{
+    background: #f5f6f7;
+}
+#missionPopup button {
+    cursor: pointer;
+    border: none;
+    border-radius: 5px;
+    color: white;
+    font-family: 'PressStart2P', sans-serif;
+    font-size: 14px;
+}
+
+#missionPopup button:hover {
+    opacity: 0.8;
+}
+
+#navbar {
+    background: #333;
+    color: white;
+    padding: 10px 20px;
+}
+
+#navbar ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: flex-start;
+}
+
+#navbar ul li {
+    margin-right: 20px;
+}
+
+#navbar ul li a {
+    color: white;
+    text-decoration: none;
+    font-size: 16px;
+}
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.4);
+    
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid #f0ebeb;
+    width: 80%;
+    max-width: 600px;
+    border-radius: 10px;
+    
+}
+
+.modal-content h2 {
+    text-align: center; /* 标题居中 */
+    margin-bottom: 20px; /* 添加一些底部间距 */
+}
+
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 40px;
+    font-weight: bold;
+    
+}
+.button-container {
+    display: flex; /* 使用Flexbox布局 */
+    justify-content: center; /* 水平居中 */
+    align-items: center; /* 垂直居中 */
+    margin-top: 20px; /* 添加一些顶部间距 */
+}
+
+/* 按钮的基本样式 */
+#know-rules {
+    display: block; /* 确保按钮显示 */
+    padding: 10px 20px; /* 内边距 */
+    background-color: #4CAF50; /* 初始背景颜色 */
+    color: white; /* 初始文字颜色 */
+    border: none; /* 无边框 */
+    border-radius: 5px; /* 圆角边框 */
+    cursor: pointer; /* 鼠标悬停时显示手型 */
+    font-size: 16px; /* 初始文字大小 */
+    transition: background-color 0.3s, font-size 0.3s; /* 平滑过渡效果 */
+}
