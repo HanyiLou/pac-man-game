@@ -97,12 +97,9 @@ rulesLink.addEventListener("click", (e) => {
 				[1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
 				[1, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 1],
 				[1, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 1],
-				[1, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 1],
-				[1, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 1],
-				[1, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 1],
-				[1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1],
-				[1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1],
-				[1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1],
+				[1, 0, 1, 1, 1, 1, 0, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 0, 1, 1, 1, 1, 0, 1],
+				[1, 0, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 0, 1],
+				[1, 0, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 0, 1],
 				[1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
 				[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
 			],
@@ -188,9 +185,6 @@ rulesLink.addEventListener("click", (e) => {
 				[1, 0, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 0, 1],
 				[1, 0, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 0, 1],
 				[1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1],
-				[1, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 1],
-				[1, 0, 1, 1, 1, 1, 0, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 0, 1, 1, 1, 1, 0, 1],
-				[1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1],
 				[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
 			],
 			'wall_color': '#37C6C0',
@@ -262,12 +256,18 @@ rulesLink.addEventListener("click", (e) => {
 				[0, 0, 0, 0, 1, 1, 0, 1, 1, 0, 1, 2, 2, 2, 2, 2, 2, 1, 0, 1, 1, 0, 1, 1, 0, 0, 0, 0],
 				[1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 2, 2, 2, 2, 2, 2, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1],
 				[1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1],
-				[1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+				[0, 0, 0, 0, 1, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 1, 0, 0, 0, 0],
+				[1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1],
+				[1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1],
+				[1, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 1],
+				[1, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 1],
+				[1, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 1],
+				[1, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 1],
+				[1, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 1],
+				[1, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 1],
+				[1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1],
 				[1, 0, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 0, 1],
 				[1, 0, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 0, 1],
-				[1, 0, 1, 1, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 1, 1, 0, 1],
-				[1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1],
-				[1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1],
 				[1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
 				[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
 			],
@@ -607,7 +607,7 @@ rulesLink.addEventListener("click", (e) => {
 	(function () {
 		_COIGIG.forEach(function (config, index) {
 			var stage, map, beans, items, player, totalBeans, remainingBeans;
-			
+
 
 			// 计算总豆数
 			totalBeans = 0;
@@ -618,37 +618,13 @@ rulesLink.addEventListener("click", (e) => {
 			});
 			totalBeans += Object.keys(config['goods']).length;
 			remainingBeans = totalBeans;
-			playerEaten = 0;  // 新增玩家吃豆计数
 
 			stage = game.createStage({
-				status: 1,
-				missionTriggered: false, // 添加任务触发标志
-				timeout: 30,
-				init: function() {
-					_SCORE = 0;  // 重置总分数
-					player.score = 0;  // 重置玩家分数
-					this.status = 0;
-					this.timeout = 30;
-					this.missionTriggered = false;
-					items.forEach(function (item) {
-						item.status = 1;
-						item.timeout = 0;
-					});
-					player.coord.x = 13.5;
-					player.coord.y = 23;
-					player.orientation = 2;
-					player.visible = true;
-					player.isWaiting = false;
-					player.isHelping = false;
-					var pos = map.coord2position(player.coord.x, player.coord.y);
-					player.x = pos.x;
-					player.y = pos.y;
-				},
+				missionTriggered: false, // 添加 missionTriggered 状态
 				update: function () {
 					var stage = this;
 					if (stage.status == 1) {								//场景正常运行
 						items.forEach(function (item) {
-							if (player.isWaiting) return;
 							if (map && !map.get(item.coord.x, item.coord.y) && !map.get(player.coord.x, player.coord.y)) {
 								var dx = item.x - player.x;
 								var dy = item.y - player.y;
@@ -668,7 +644,40 @@ rulesLink.addEventListener("click", (e) => {
 						if (remainingBeans <= 0) {
 							game.nextStage();
 						}
-						
+						if (player.isWaiting) { // 玩家进入等待模式
+							if (!this.coord.offset) {
+								// 获取所有剩余豆子的坐标
+								let beanCoords = [];
+								for (let y = 0; y < beans.data.length; y++) {
+									for (let x = 0; x < beans.data[y].length; x++) {
+										if (beans.data[y][x] === 0 && !config['goods'][x + ',' + y]) {
+											beanCoords.push({ x: x, y: y });
+										}
+									}
+								}
+								// 找到最近的豆子
+								let nearest = null;
+								let minDist = Infinity;
+								beanCoords.forEach(coord => {
+									let dist = Math.abs(coord.x - this.coord.x) + Math.abs(coord.y - this.coord.y);
+									if (dist < minDist) {
+										minDist = dist;
+										nearest = coord;
+									}
+								});
+								// 计算路径
+								if (nearest) {
+									this.path = map.finder({
+										map: JSON.parse(JSON.stringify(map.data).replace(/2/g, 0)),
+										start: this.coord,
+										end: nearest
+									});
+									if (this.path.length) {
+										this.vector = this.path[0];
+									}
+								}
+							}
+						} 
 						// 如果玩家处于等待模式，检查NPC是否已经吃完所有豆子
 						if (player.isWaiting) {
 							let hasRemainingBeans = false;
@@ -698,11 +707,11 @@ rulesLink.addEventListener("click", (e) => {
 						// 	}
 						// }
 					}
-						// 添加豆子数量检查
-					if (player.score >= totalBeans / 2 && !stage.missionTriggered) {
-						stage.missionTriggered = true;
-						stage.status = 2; // 暂停游戏
+					// 添加豆子数量检查
+					if (remainingBeans <= totalBeans / 2 && !this.missionTriggered) {
+						this.missionTriggered = true;
 						document.getElementById('missionPopup').style.display = 'block';
+						this.status = 2; // 暂停游戏
 						
 						//等待
 						document.getElementById('waitBtn').addEventListener('click', function () {
@@ -823,41 +832,26 @@ rulesLink.addEventListener("click", (e) => {
 				x: 690,
 				y: 80,
 				draw: function (context) {
-					// 显示玩家个人得分
 					context.font = 'bold 24px PressStart2P';
 					context.textAlign = 'left';
 					context.textBaseline = 'bottom';
 					context.fillStyle = '#C33';
-					context.fillText('你的分数', this.x, this.y - 62 + 10);
+					context.fillText('SCORE', this.x, this.y);
 					context.font = '24px PressStart2P';
 					context.textAlign = 'left';
 					context.textBaseline = 'top';
 					context.fillStyle = '#FFF';
-					context.fillText(player.score, this.x + 12, this.y - 52+ 10);
-					
-					// 显示总得分
+					context.fillText(_SCORE, this.x + 12, this.y + 10);
 					context.font = 'bold 24px PressStart2P';
 					context.textAlign = 'left';
 					context.textBaseline = 'bottom';
 					context.fillStyle = '#C33';
-					context.fillText('总分', this.x, this.y+ 20);
+					context.fillText('LEVEL', this.x, this.y + 72);
 					context.font = '24px PressStart2P';
 					context.textAlign = 'left';
 					context.textBaseline = 'top';
 					context.fillStyle = '#FFF';
-					context.fillText(_SCORE, this.x + 12, this.y + 20+ 10);
-					
-					// 显示关卡
-					context.font = 'bold 24px PressStart2P';
-					context.textAlign = 'left';
-					context.textBaseline = 'bottom';
-					context.fillStyle = '#C33';
-					context.fillText('关卡', this.x, this.y + 82+ 10);
-					context.font = '24px PressStart2P';
-					context.textAlign = 'left';
-					context.textBaseline = 'top';
-					context.fillStyle = '#FFF';
-					context.fillText(index + 1, this.x + 12, this.y + 92+ 10);
+					context.fillText(index + 1, this.x + 12, this.y + 82);
 				}
 			});
 			//状态文字
@@ -898,7 +892,7 @@ rulesLink.addEventListener("click", (e) => {
 					context.fillStyle = '#FFF';
 					context.fillText('X', this.x - 15, this.y + 30);
 					context.font = '24px PressStart2P';
-					context.fillText((_LIFE - 1), this.x + 10, this.y + 26);//生命值,画面上的×0就来自这里
+					context.fillText((_LIFE - 1), this.x + 10, this.y + 26);
 				}
 			});
 			//NPC
@@ -926,11 +920,6 @@ rulesLink.addEventListener("click", (e) => {
 							if (!beans.get(this.coord.x, this.coord.y)) {
 								// 如果有豆子，将其移除
 								beans.set(this.coord.x, this.coord.y, 1);
-								_SCORE++; // 增加总分数
-								remainingBeans--; // 减少剩余豆子
-								if (config['goods'][this.coord.x + ',' + this.coord.y]) {	//吃到能量豆
-									// 移除将NPC状态设置为3的代码
-								}
 							}
 
 							if (this.status == 1) {
@@ -942,50 +931,31 @@ rulesLink.addEventListener("click", (e) => {
 											new_map[item.coord.y][item.coord.x] = 1;
 										}
 									});
-									
-									// If player is waiting, find nearest bean instead of player
-									if (player.isWaiting) {
-										// Find all remaining beans
-										let beanCoords = [];
-										for (let y = 0; y < beans.data.length; y++) {
-											for (let x = 0; x < beans.data[y].length; x++) {
-												if (!beans.data[y][x]) {
-													beanCoords.push({x: x, y: y});
-												}
-											}
-										}
-										
-										// Find nearest bean
-										if (beanCoords.length > 0) {
-											let nearest = beanCoords[0];
-											let minDist = Infinity;
-											beanCoords.forEach(coord => {
-												let dx = coord.x - this.coord.x;
-												let dy = coord.y - this.coord.y;
-												let dist = dx*dx + dy*dy;
-												if (dist < minDist) {
-													minDist = dist;
-													nearest = coord;
-												}
-											});
-											this.path = map.finder({
-												map: new_map,
-												start: this.coord,
-												end: nearest
-											});
-										}
-									} else {
-										// Normal behavior - chase player
-										this.path = map.finder({
-											map: new_map,
-											start: this.coord,
-											end: player.coord
-										});
-									}
-									
+									this.path = map.finder({
+										map: new_map,
+										start: this.coord,
+										end: player.coord
+									});
 									if (this.path.length) {
 										this.vector = this.path[0];
 									}
+								}
+							} else if (this.status == 3) {
+								new_map = JSON.parse(JSON.stringify(map.data).replace(/2/g, 0));
+								var id = this._id;
+								items.forEach(function (item) {
+									if (item._id != id) {
+										new_map[item.coord.y][item.coord.x] = 1;
+									}
+								});
+								this.path = map.finder({
+									map: new_map,
+									start: player.coord,
+									end: this.coord,
+									type: 'next'
+								});
+								if (this.path.length) {
+									this.vector = this.path[Math.floor(Math.random() * this.path.length)];
 								}
 							} else if (this.status == 4) {
 								new_map = JSON.parse(JSON.stringify(map.data).replace(/2/g, 0));
@@ -1021,27 +991,20 @@ rulesLink.addEventListener("click", (e) => {
 						}
 						this.x += this.speed * _COS[this.orientation];
 						this.y += this.speed * _SIN[this.orientation];
-						// if (player.isWaiting && !beans.get(this.coord.x, this.coord.y)) {
-						//     _SCORE++; 
-						//     remainingBeans--;
-						//     beans.set(this.coord.x, this.coord.y, 1);
-						//     if (config['goods'][this.coord.x + ',' + this.coord.y]) {	//吃到能量豆
-						//         items.forEach(function (item) {
-						//             if (item.status == 1 || item.status == 3) {	//如果NPC为正常状态，则置为临时状态
-						//                 item.timeout = 450;
-						//                 item.status = 3;
-						//             }
-						//         });
-						//     }
-						// }
 					},
 					draw: function (context) {
 						context.fillStyle = '#20E100'; // 使用与玩家不同的颜色
 						context.beginPath();
-						if (this.times % 2) {
-							context.arc(this.x, this.y, this.width / 2, (.5 * this.orientation + .20) * Math.PI, (.5 * this.orientation - .20) * Math.PI, false);
-						} else {
-							context.arc(this.x, this.y, this.width / 2, (.5 * this.orientation + .01) * Math.PI, (.5 * this.orientation - .01) * Math.PI, false);
+						if (this.status != 4) { // NPC 正常状态
+							if (this.times % 2) {
+								context.arc(this.x, this.y, this.width / 2, (.5 * this.orientation + .20) * Math.PI, (.5 * this.orientation - .20) * Math.PI, false);
+							} else {
+								context.arc(this.x, this.y, this.width / 2, (.5 * this.orientation + .01) * Math.PI, (.5 * this.orientation - .01) * Math.PI, false);
+							}
+						} else { // NPC 被吃
+							// if (this.timeout) {
+							// 	context.arc(this.x, this.y, this.width / 2, (.5 * this.orientation + 1 - .02 * this.timeout) * Math.PI, (.5 * this.orientation - 1 + .02 * this.timeout) * Math.PI, false);
+							// }
 						}
 						context.lineTo(this.x, this.y);
 						context.closePath();
@@ -1057,10 +1020,9 @@ rulesLink.addEventListener("click", (e) => {
 				type: 1,
 				location: map,
 				visible: true,
-				coord: { x: 13.5, y: 23 },  //玩家初始位置
-				orientation: 2,  //玩家初始方向0：朝右  1：朝下  2：朝左  3：朝上				
-				speed: 1,  //玩家速度
-				score: 0, // 添加玩家个人分数
+				coord: { x: 13.5, y: 23 },
+				orientation: 2,
+				speed: 1,
 				frames: 10,
 				update: function () {
 					var coord = this.coord;
@@ -1072,31 +1034,32 @@ rulesLink.addEventListener("click", (e) => {
 					
 					if (!coord.offset) {
 						if (typeof this.control.orientation != 'undefined') {
-							// 检查前方格子
-							var nextValue = map.get(coord.x + _COS[this.control.orientation], coord.y + _SIN[this.control.orientation]);
-							// 如果前方是空地(0)或传送门(<0)
-							if (nextValue <= 0) {
+							if (!map.get(coord.x + _COS[this.control.orientation], coord.y + _SIN[this.control.orientation])) {
 								this.orientation = this.control.orientation;
-								if (nextValue < 0) {
-									// 传送门逻辑
-									this.x -= map.size * (map.x_length - 1) * _COS[this.orientation];
-									this.y -= map.size * (map.y_length - 1) * _SIN[this.orientation];
-								} else {
-									// 普通移动
-									this.x += this.speed * _COS[this.orientation];
-									this.y += this.speed * _SIN[this.orientation];
-								}
 							}
 						}
 						this.control = {};
+						var value = map.get(coord.x + _COS[this.orientation], coord.y + _SIN[this.orientation]);
+						if (value == 0) {
+							this.x += this.speed * _COS[this.orientation];
+							this.y += this.speed * _SIN[this.orientation];
+						} else if (value < 0) {
+							this.x -= map.size * (map.x_length - 1) * _COS[this.orientation];
+							this.y -= map.size * (map.y_length - 1) * _SIN[this.orientation];
+						}
 					} else {
 						if (!beans.get(this.coord.x, this.coord.y)) {	//吃豆
-							_SCORE++; 
-							this.score++; // 增加玩家的个人分数
-							remainingBeans--;
+							_SCORE++; remainingBeans--;
 							beans.set(this.coord.x, this.coord.y, 1);
+							if (config['goods'][this.coord.x + ',' + this.coord.y]) {	//吃到能量豆
+								items.forEach(function (item) {
+									if (item.status == 1 || item.status == 3) {	//如果NPC为正常状态，则置为临时状态
+										item.timeout = 450;
+										item.status = 3;
+									}
+								});
+							}
 						}
-						// 在格子之间移动时，继续移动到格子中心
 						this.x += this.speed * _COS[this.orientation];
 						this.y += this.speed * _SIN[this.orientation];
 					}
@@ -1129,8 +1092,8 @@ rulesLink.addEventListener("click", (e) => {
 				switch (e.keyCode) {
 					case 13: //回车
 					case 32: //空格
-						//this.status = this.status == 2 ? 1 : 2; //暂停游戏or继续游戏
-						//break;
+						this.status = this.status == 2 ? 1 : 2;
+						break;
 					case 39: //右
 						player.control = { orientation: 0 };
 						break;
@@ -1196,3 +1159,5 @@ rulesLink.addEventListener("click", (e) => {
 		game.init();
 	});
 })();
+
+
