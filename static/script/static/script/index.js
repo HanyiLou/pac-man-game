@@ -19,7 +19,7 @@ rulesLink.addEventListener("click", (e) => {
 
 });
  // 点击"我已了解"按钮后关闭规则弹窗并显示游戏界面
- knowRulesButton.addEventListener("click", () => {
+ knowRulesButton.addEventListener('click', () => {
 	rulesModal.style.display = "none";
 	
 });
@@ -262,18 +262,12 @@ rulesLink.addEventListener("click", (e) => {
 				[0, 0, 0, 0, 1, 1, 0, 1, 1, 0, 1, 2, 2, 2, 2, 2, 2, 1, 0, 1, 1, 0, 1, 1, 0, 0, 0, 0],
 				[1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 2, 2, 2, 2, 2, 2, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1],
 				[1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1],
-				[0, 0, 0, 0, 1, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 1, 0, 0, 0, 0],
-				[1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1],
-				[1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1],
-				[1, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 1],
-				[1, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 1],
-				[1, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 1],
-				[1, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 1],
-				[1, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 1],
-				[1, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 1],
-				[1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1],
+				[1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
 				[1, 0, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 0, 1],
 				[1, 0, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 0, 1],
+				[1, 0, 1, 1, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 1, 1, 0, 1],
+				[1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1],
+				[1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1],
 				[1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
 				[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
 			],
@@ -834,7 +828,7 @@ rulesLink.addEventListener("click", (e) => {
 					context.textAlign = 'left';
 					context.textBaseline = 'bottom';
 					context.fillStyle = '#C33';
-					context.fillText('YOUR SCORE', this.x, this.y - 62 + 10);
+					context.fillText('你的分数', this.x, this.y - 62 + 10);
 					context.font = '24px PressStart2P';
 					context.textAlign = 'left';
 					context.textBaseline = 'top';
@@ -846,7 +840,7 @@ rulesLink.addEventListener("click", (e) => {
 					context.textAlign = 'left';
 					context.textBaseline = 'bottom';
 					context.fillStyle = '#C33';
-					context.fillText('SCORE', this.x, this.y+ 20);
+					context.fillText('总分', this.x, this.y+ 20);
 					context.font = '24px PressStart2P';
 					context.textAlign = 'left';
 					context.textBaseline = 'top';
@@ -858,7 +852,7 @@ rulesLink.addEventListener("click", (e) => {
 					context.textAlign = 'left';
 					context.textBaseline = 'bottom';
 					context.fillStyle = '#C33';
-					context.fillText('LEVEL', this.x, this.y + 82+ 10);
+					context.fillText('关卡', this.x, this.y + 82+ 10);
 					context.font = '24px PressStart2P';
 					context.textAlign = 'left';
 					context.textBaseline = 'top';
@@ -904,7 +898,7 @@ rulesLink.addEventListener("click", (e) => {
 					context.fillStyle = '#FFF';
 					context.fillText('X', this.x - 15, this.y + 30);
 					context.font = '24px PressStart2P';
-					context.fillText((_LIFE - 1), this.x + 10, this.y + 26);
+					context.fillText((_LIFE - 1), this.x + 10, this.y + 26);//生命值,画面上的×0就来自这里
 				}
 			});
 			//NPC
@@ -935,12 +929,7 @@ rulesLink.addEventListener("click", (e) => {
 								_SCORE++; // 增加总分数
 								remainingBeans--; // 减少剩余豆子
 								if (config['goods'][this.coord.x + ',' + this.coord.y]) {	//吃到能量豆
-									items.forEach(function (item) {
-										if (item.status == 1 || item.status == 3) {	//如果NPC为正常状态，则置为临时状态
-											item.timeout = 450;
-											item.status = 3;
-										}
-									});
+									// 移除将NPC状态设置为3的代码
 								}
 							}
 
@@ -998,23 +987,6 @@ rulesLink.addEventListener("click", (e) => {
 										this.vector = this.path[0];
 									}
 								}
-							} else if (this.status == 3) {
-								new_map = JSON.parse(JSON.stringify(map.data).replace(/2/g, 0));
-								var id = this._id;
-								items.forEach(function (item) {
-									if (item._id != id) {
-										new_map[item.coord.y][item.coord.x] = 1;
-									}
-								});
-								this.path = map.finder({
-									map: new_map,
-									start: player.coord,
-									end: this.coord,
-									type: 'next'
-								});
-								if (this.path.length) {
-									this.vector = this.path[Math.floor(Math.random() * this.path.length)];
-								}
 							} else if (this.status == 4) {
 								new_map = JSON.parse(JSON.stringify(map.data).replace(/2/g, 0));
 								this.path = map.finder({
@@ -1066,16 +1038,10 @@ rulesLink.addEventListener("click", (e) => {
 					draw: function (context) {
 						context.fillStyle = '#20E100'; // 使用与玩家不同的颜色
 						context.beginPath();
-						if (this.status != 4) { // NPC 正常状态
-							if (this.times % 2) {
-								context.arc(this.x, this.y, this.width / 2, (.5 * this.orientation + .20) * Math.PI, (.5 * this.orientation - .20) * Math.PI, false);
-							} else {
-								context.arc(this.x, this.y, this.width / 2, (.5 * this.orientation + .01) * Math.PI, (.5 * this.orientation - .01) * Math.PI, false);
-							}
-						} else { // NPC 被吃
-							// if (this.timeout) {
-							// 	context.arc(this.x, this.y, this.width / 2, (.5 * this.orientation + 1 - .02 * this.timeout) * Math.PI, (.5 * this.orientation - 1 + .02 * this.timeout) * Math.PI, false);
-							// }
+						if (this.times % 2) {
+							context.arc(this.x, this.y, this.width / 2, (.5 * this.orientation + .20) * Math.PI, (.5 * this.orientation - .20) * Math.PI, false);
+						} else {
+							context.arc(this.x, this.y, this.width / 2, (.5 * this.orientation + .01) * Math.PI, (.5 * this.orientation - .01) * Math.PI, false);
 						}
 						context.lineTo(this.x, this.y);
 						context.closePath();
@@ -1091,11 +1057,12 @@ rulesLink.addEventListener("click", (e) => {
 				type: 1,
 				location: map,
 				visible: true,
-				coord: { x: 13.5, y: 23 },
-				orientation: 2,
-				speed: 1,
+				coord: { x: 13.5, y: 23 },  //玩家初始位置
+				orientation: 2,  //玩家初始方向0：朝右  1：朝下  2：朝左  3：朝上				
+				speed: 1,  //玩家速度
 				score: 0, // 添加玩家个人分数
 				frames: 10,
+				moving: false,  // 添加移动状态标志
 				update: function () {
 					var coord = this.coord;
 					
@@ -1104,36 +1071,39 @@ rulesLink.addEventListener("click", (e) => {
 						return;
 					}
 					
-					if (!coord.offset) {
+					if (!coord.offset) {  // 在格子中心点
 						if (typeof this.control.orientation != 'undefined') {
-							if (!map.get(coord.x + _COS[this.control.orientation], coord.y + _SIN[this.control.orientation])) {
+							// 检查前方格子
+							var nextValue = map.get(coord.x + _COS[this.control.orientation], coord.y + _SIN[this.control.orientation]);
+							// 如果前方是空地(0)或传送门(<0)
+							if (nextValue <= 0) {
 								this.orientation = this.control.orientation;
+								if (nextValue < 0) {
+									// 传送门逻辑
+									this.x -= map.size * (map.x_length - 1) * _COS[this.orientation];
+									this.y -= map.size * (map.y_length - 1) * _SIN[this.orientation];
+									this.moving = false;
+								} else {
+									// 普通移动
+									this.x += this.speed * _COS[this.orientation];
+									this.y += this.speed * _SIN[this.orientation];
+								}
+							} else {
+								this.moving = false;  // 如果撞墙，允许新的移动
 							}
 						}
 						this.control = {};
-						var value = map.get(coord.x + _COS[this.orientation], coord.y + _SIN[this.orientation]);
-						if (value == 0) {
-							this.x += this.speed * _COS[this.orientation];
-							this.y += this.speed * _SIN[this.orientation];
-						} else if (value < 0) {
-							this.x -= map.size * (map.x_length - 1) * _COS[this.orientation];
-							this.y -= map.size * (map.y_length - 1) * _SIN[this.orientation];
+						if (this.moving && coord.offset === 0) {
+							this.moving = false;  // 完成一格移动
 						}
-					} else {
-						if (!beans.get(this.coord.x, this.coord.y)) {	//吃豆
+					} else {  // 在格子之间移动
+						if (!beans.get(this.coord.x, this.coord.y)) {    //吃豆
 							_SCORE++; 
 							this.score++; // 增加玩家的个人分数
 							remainingBeans--;
 							beans.set(this.coord.x, this.coord.y, 1);
-							if (config['goods'][this.coord.x + ',' + this.coord.y]) {	//吃到能量豆
-								items.forEach(function (item) {
-									if (item.status == 1 || item.status == 3) {	//如果NPC为正常状态，则置为临时状态
-										item.timeout = 450;
-										item.status = 3;
-									}
-								});
-							}
 						}
+						// 继续移动到格子中心
 						this.x += this.speed * _COS[this.orientation];
 						this.y += this.speed * _SIN[this.orientation];
 					}
@@ -1158,32 +1128,48 @@ rulesLink.addEventListener("click", (e) => {
 				}
 			});
 			//事件绑定
+			var keyPressed = false;  // 添加按键状态控制变量
+
 			stage.bind('keydown', function (e) {
 				if (document.getElementById('missionPopup').style.display === 'block') {
-					// 如果提示框显示，空格键不切换游戏状态
 					return;
 				}
-				switch (e.keyCode) {
-					case 13: //回车
-					case 32: //空格
-						//this.status = this.status == 2 ? 1 : 2; //暂停游戏or继续游戏
-						//break;
-					case 39: //右
-						player.control = { orientation: 0 };
-						break;
-					case 40: //下
-						player.control = { orientation: 1 };
-						break;
-					case 37: //左
-						player.control = { orientation: 2 };
-						break;
-					case 38: //上
-						player.control = { orientation: 3 };
-						break;
+				if (!keyPressed) {  // 只有当没有按键被按下时才处理新的按键
+					switch (e.keyCode) {
+						case 13: //回车
+							if (stage.status == 0) {    //游戏开始
+								stage.status = 1;
+							} else if (stage.status == 2) {    //游戏结束
+								stage.status = 0;
+								stage.init();
+							}
+							break;
+						case 37: //左
+							player.control = { orientation: 2 };
+							keyPressed = true;
+							break;
+						case 38: //上
+							player.control = { orientation: 3 };
+							keyPressed = true;
+							break;
+						case 39: //右
+							player.control = { orientation: 0 };
+							keyPressed = true;
+							break;
+						case 40: //下
+							player.control = { orientation: 1 };
+							keyPressed = true;
+							break;
+					}
 				}
-
 			});
 
+			stage.bind('keyup', function (e) {
+				// 当方向键抬起时，重置按键状态
+				if (e.keyCode >= 37 && e.keyCode <= 40) {
+					keyPressed = false;
+				}
+			});
 		});
 
 	})();
