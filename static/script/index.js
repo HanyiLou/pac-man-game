@@ -669,8 +669,8 @@ rulesLink.addEventListener("click", (e) => {
 							game.nextStage();
 						}
 						
-						// 如果玩家处于等待模式，检查NPC是否已经吃完所有豆子
-						if (player.isWaiting) {
+						// 检查NPC是否已经吃完所有豆子
+						if (player.isWaiting || player.isHelping) {
 							let hasRemainingBeans = false;
 							for (let y = 0; y < beans.data.length; y++) {
 								for (let x = 0; x < beans.data[y].length; x++) {
@@ -918,7 +918,7 @@ rulesLink.addEventListener("click", (e) => {
 					frames: 10,
 					speed: 0.5,//NPC的速度
 					timeout: Math.floor(Math.random() * 120),
-					startDelay: Math.floor(Math.random() * 60) + 60,  // 1~2秒的延迟（60帧=1秒）
+					startDelay: Math.floor(Math.random() * 30) + 90,  // 0.5~2秒的延迟（60帧=1秒）
 					active: false,  // 是否开始活动
 					update: function () {
 						// 如果还在延迟启动阶段
@@ -986,12 +986,36 @@ rulesLink.addEventListener("click", (e) => {
 											});
 										}
 									} else {
-										// Normal behavior - chase player
-										this.path = map.finder({
-											map: new_map,
-											start: this.coord,
-											end: player.coord
-										});
+										// Normal behavior - chase player 不行 还是要自动寻豆
+										// Find all remaining beans
+										let beanCoords = [];
+										for (let y = 0; y < beans.data.length; y++) {
+											for (let x = 0; x < beans.data[y].length; x++) {
+												if (!beans.data[y][x]) {
+													beanCoords.push({x: x, y: y});
+												}
+											}
+										}
+										
+										// Find nearest bean
+										if (beanCoords.length > 0) {
+											let nearest = beanCoords[0];
+											let minDist = Infinity;
+											beanCoords.forEach(coord => {
+												let dx = coord.x - this.coord.x;
+												let dy = coord.y - this.coord.y;
+												let dist = dx*dx + dy*dy;
+												if (dist < minDist) {
+													minDist = dist;
+													nearest = coord;
+												}
+											});
+											this.path = map.finder({
+												map: new_map,
+												start: this.coord,
+												end: nearest
+											});
+										}
 									}
 									
 									if (this.path.length) {
