@@ -69,7 +69,7 @@ rulesLink.addEventListener("click", (e) => {
 				'26,23': 1
 			}
 		},
-	/* 	{				//第2关
+		{				//第2关
 			'map': [		//地图数据
 				[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 				[1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
@@ -447,7 +447,7 @@ rulesLink.addEventListener("click", (e) => {
 				'26,28': 1
 			}
 		},
-		{				//第11关
+		/* {				//第11关
 			'map': [		//地图数据
 				[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 				[1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
@@ -540,6 +540,7 @@ rulesLink.addEventListener("click", (e) => {
 		_SCORE = 0;				//玩家得分
 	
 	var game = new Game('canvas');
+	var roundData = []; // <--- 添加这行：用于存储每轮结果的数组
 	//启动页
 	(function () {
 		var stage = game.createStage();
@@ -598,20 +599,246 @@ rulesLink.addEventListener("click", (e) => {
 			switch (e.keyCode)  {
 				case 13: // Enter 回车键
 				case 32: // Space 空格键
-                    // --- 记录日志: 游戏开始 ---
+                    // --- 记录日志: 游戏开始 (从启动页进入Demo) ---
                     if (typeof logGameEvent === 'function') {
-                        logGameEvent('GameStart');
+                        logGameEvent('GameStartInitiated'); // 表示用户按键开始
                     }
-                    window.currentGameRound = 1; // 设置初始回合数为 1，用于日志记录
-					game.setStage(1); // 跳转到第一个游戏关卡舞台 (索引为 1)
+                    game.setStage(1); // 跳转到Demo教学关卡 (新索引 1)
 					break;
 			}
 		});
 	})();
+
+	// 舞台 1: Demo教学关卡 (新添加 - 互动版)
+(function () {
+    var stage = game.createStage({ index: 1 }); // 明确指定索引
+    var demoStep = 0; // 0: 初始文本, 1: 等待左移, 2: 等待右移, 3: 等待上移, 4: 等待下移, 5: 显示总结, 6: 等待开始
+    var demoPacman = null; // 教学用吃豆人
+    var instructionText = null; // 当前显示的教学文本Item
+    var targetX = null, targetY = null; // 动画目标位置
+    var isAnimating = false; // 是否正在移动动画中
+    var animSpeed = 4; // 动画移动速度 (像素/帧)
+
+    // 存储不同步骤的文本内容
+    const texts = [
+        "欢迎来到游戏教学！\n\n按 [Enter] 键开始学习操作。", // Step 0
+        "请按键盘 ← 键，让吃豆人向左移动。",           // Step 1
+        "很好！现在请按 → 键，向右移动。",             // Step 2
+        "试试按 ↑ 键向上移动。",                    // Step 3
+        "最后，请按 ↓ 键向下移动。",                  // Step 4
+        "太棒了！你已掌握基本移动。\n\n目标：与队友合作吃掉所有豆子。\n得分：吃豆得分，越快越好，平分收益。\n\n按 [Enter] 键准备开始第一回合！", // Step 5 & 6 合并提示
+    ];
+
+    // 创建或更新教学文本的函数
+    function updateInstructionText() {
+        if (!instructionText) {
+            instructionText = stage.createItem({
+                x: game.width / 2,
+                y: game.height * 0.6, // 文本位置靠下
+                draw: function (context) {
+                    if (demoStep < texts.length && !isAnimating) { // 只在非动画时显示当前步骤文本
+                        context.font = '18px sans-serif';
+                        context.textAlign = 'center';
+                        context.textBaseline = 'middle';
+                        context.fillStyle = '#DDD';
+                        // 处理换行符
+                        const lines = texts[demoStep].split('\n');
+                        lines.forEach((line, index) => {
+                            context.fillText(line, this.x, this.y + index * 25); // 调整行间距
+                        });
+
+                        // 在最后一步添加闪烁提示
+                        if (demoStep === 5 && this.times % 28 < 14) { // 使用 stage 的 times 实现闪烁
+                             context.font = 'bold 16px PressStart2P';
+                             context.fillStyle = '#AAA';
+                             context.fillText('Press Enter to start Round 1', this.x, this.y + lines.length * 25 + 20);
+                        }
+                    }
+                }
+            });
+             // 在 instructionText 创建后设置其 times 属性以进行闪烁
+             instructionText.times = 0; // 初始化 times
+             const originalDraw = instructionText.draw; // 保存原始 draw
+             instructionText.draw = function(context) { // 包装 draw 来更新 times
+                  this.times = stage.items[0]?.times || 0; // 从舞台或其他稳定 Item 获取 times
+                  originalDraw.call(this, context);
+             }
+
+        }
+        // (可选) 如果需要显式更新文本内容，可以在这里调用
+        // instructionText.text = texts[demoStep]; // (需要修改 draw 函数来使用 this.text)
+    }
+
+
+    stage.init = function() { // 每次进入/重置教学关卡时调用
+        this.status = 1;
+        demoStep = 0; // 重置教学步骤
+        isAnimating = false;
+
+        // 创建教学吃豆人 (如果还不存在)
+        if (!demoPacman) {
+            demoPacman = stage.createItem({
+                x: game.width / 2,
+                y: game.height / 2 - 50, // 初始位置在屏幕中心偏上
+                width: 30,
+                height: 30,
+                orientation: 0, // 初始朝右
+                visible: false, // 初始隐藏，在教学步骤中显示
+                frames: 10, // 用于可能的动画
+                draw: function (context) {
+                    if (!this.visible) return;
+                    context.fillStyle = '#FFE600'; // 黄色
+                    context.beginPath();
+                    // 简单的嘴巴动画 (基于 isAnimating 或 stage.times)
+                    let mouthAngle = (stage.items[0]?.times % this.frames < this.frames / 2) ? 0.20 : 0.05;
+                    if (isAnimating) mouthAngle = 0.20; // 移动时张嘴大点
+                    context.arc(this.x, this.y, this.width / 2, (.5 * this.orientation + mouthAngle) * Math.PI, (.5 * this.orientation - mouthAngle) * Math.PI, false);
+                    context.lineTo(this.x, this.y);
+                    context.closePath();
+                    context.fill();
+                }
+            });
+             // 同样为 demoPacman 添加 times 更新
+            const originalPacmanDraw = demoPacman.draw;
+            demoPacman.draw = function(context) {
+                this.times = stage.items[0]?.times || 0; // 从舞台或其他稳定 Item 获取 times
+                originalPacmanDraw.call(this, context);
+            }
+        } else {
+            // 重置位置和可见性
+            demoPacman.x = game.width / 2;
+            demoPacman.y = game.height / 2 - 50;
+            demoPacman.visible = false;
+            demoPacman.orientation = 0;
+        }
+
+        targetX = demoPacman.x; // 动画目标初始为当前位置
+        targetY = demoPacman.y;
+
+        updateInstructionText(); // 更新/创建初始教学文本
+
+        if (typeof logGameEvent === 'function') {
+            logGameEvent('DemoStart', { timestamp: Date.now() });
+        }
+    };
+
+    stage.update = function() { // 每帧更新
+        if (isAnimating) {
+            let dx = targetX - demoPacman.x;
+            let dy = targetY - demoPacman.y;
+            let distance = Math.sqrt(dx * dx + dy * dy);
+
+            if (distance < animSpeed) {
+                // 到达目标
+                demoPacman.x = targetX;
+                demoPacman.y = targetY;
+                isAnimating = false;
+
+                // 动画结束后，推进教学步骤
+                if (demoStep >= 1 && demoStep <= 4) {
+                    demoStep++;
+                    updateInstructionText(); // 更新显示的文本
+                     // 检查是否所有移动都完成，如果是，直接跳到总结步骤
+                    if (demoStep === 5) {
+                       // demoPacman.visible = false; // 可以选择隐藏吃豆人
+                    }
+                }
+            } else {
+                // 继续移动
+                demoPacman.x += (dx / distance) * animSpeed;
+                demoPacman.y += (dy / distance) * animSpeed;
+            }
+        }
+         // 更新教学文本的 times 属性以进行闪烁（如果文本item自己不更新的话）
+         if (instructionText && typeof instructionText.times !== 'undefined') {
+             instructionText.times = stage.items[0]?.times || 0; // 尝试从第一个item获取times
+         }
+         if (demoPacman && typeof demoPacman.times !== 'undefined') {
+             demoPacman.times = stage.items[0]?.times || 0;
+         }
+    };
+
+    // 标题 (保持不变)
+    stage.createItem({
+        x: game.width / 2, y: game.height * .15, // 稍微上移标题
+        draw: function (context) {
+            context.font = 'bold 36px PressStart2P';
+            context.textAlign = 'center';
+            context.textBaseline = 'middle';
+            context.fillStyle = '#FFF';
+            context.fillText('游戏教学', this.x, this.y);
+        }
+    });
+
+    // 事件绑定
+    stage.bind('keydown', function (e) {
+        if (isAnimating) return; // 动画播放中，忽略输入
+
+        const moveDistance = 60; // 每次移动的距离
+
+        switch (demoStep) {
+            case 0: // 等待 Enter 开始教学
+                if (e.keyCode === 13) { // Enter
+                    demoStep = 1;
+                    demoPacman.visible = true; // 显示吃豆人
+                    updateInstructionText();
+                }
+                break;
+            case 1: // 等待左移
+                if (e.keyCode === 37) { // Left Arrow
+                    demoPacman.orientation = 2;
+                    targetX = demoPacman.x - moveDistance;
+                    targetY = demoPacman.y;
+                    isAnimating = true;
+                    updateInstructionText(); // 清除或更新文本（可选，当前在动画结束时更新）
+                }
+                break;
+            case 2: // 等待右移
+                if (e.keyCode === 39) { // Right Arrow
+                    demoPacman.orientation = 0;
+                    targetX = demoPacman.x + moveDistance;
+                    targetY = demoPacman.y;
+                    isAnimating = true;
+                    updateInstructionText();
+                }
+                break;
+            case 3: // 等待上移
+                if (e.keyCode === 38) { // Up Arrow
+                    demoPacman.orientation = 3;
+                    targetX = demoPacman.x;
+                    targetY = demoPacman.y - moveDistance;
+                    isAnimating = true;
+                    updateInstructionText();
+                }
+                break;
+            case 4: // 等待下移
+                if (e.keyCode === 40) { // Down Arrow
+                    demoPacman.orientation = 1;
+                    targetX = demoPacman.x;
+                    targetY = demoPacman.y + moveDistance;
+                    isAnimating = true;
+                    updateInstructionText();
+                }
+                break;
+            case 5: // 显示总结文本，等待 Enter 开始游戏
+                if (e.keyCode === 13) { // Enter
+                    if (typeof logGameEvent === 'function') {
+                        logGameEvent('DemoEnd', { timestamp: Date.now() });
+                    }
+                    window.currentGameRound = 1; // 设置初始回合数为 1
+                    game.setStage(2); // 跳转到第一个游戏关卡舞台 (新索引 2)
+                }
+                break;
+        }
+    });
+
+})(); // 结束教学关卡的立即执行函数
+
 	//游戏主程序
 	var all_scores = 0; // 玩家所有回合的总得分 
 	var total_scores = 0; // 所有回合可获得的总豆数 
 	var roundStartTimestamp = 0; // 用于计算回合持续时间
+	
 	(function () {
 		_COIGIG.forEach(function (config, index) {
 			var stage, map, beans, items, player, totalBeans, remainingBeans;
@@ -635,6 +862,7 @@ rulesLink.addEventListener("click", (e) => {
 				missionTriggered: false, // 添加任务触发标志
 				timeout: 30,
 				roundNumber: index + 1, // 在 stage 对象中存储回合数 (从 1 开始)
+				index: index + 2, // 索引从2开始(0=启动页,1=教学关)
 				init: function() {// 当通过 setStage 启动或重置舞台时调用
 					// --- 记录日志: 回合开始 ---
 					window.currentGameRound = this.roundNumber; // 更新全局回合数变量
@@ -654,7 +882,7 @@ rulesLink.addEventListener("click", (e) => {
 					this.timeout = 30; // 重置 timeout?
 					this.missionTriggered = false; // 重置任务触发标志
 
-                    // 重置物体 (玩家, NPCs)
+                    /* // 重置物体 (玩家, NPCs)
 					items.forEach(function (item) {
                         // 重置 NPC 特定状态 (如果需要)
                         if (item.type === 2) { // 如果是 NPC
@@ -668,7 +896,7 @@ rulesLink.addEventListener("click", (e) => {
                              item.active = false; // 重置为非活动状态
                              item.path = []; // 清空路径
                         }
-					});
+					}); */
 
                     // 重置玩家特定状态
 					player.coord = { x: 13.5, y: 23 }; // 重置玩家位置
@@ -729,6 +957,13 @@ rulesLink.addEventListener("click", (e) => {
 							// --- 记录日志: 回合结束 (所有豆子吃完) ---
                             const roundEndTime = Date.now(); // **记录回合结束时间戳**
                             const roundDuration = roundEndTime - roundStartTimestamp; // **计算回合用时**
+							// --- 记录回合数据 --- <--- 添加此代码块
+                            roundData.push({
+                                round: stage.roundNumber,      // 当前回合数
+                                playerBeans: player.score,     // 玩家在本回合吃的豆数
+                                npcBeans: npcRoundScore        // NPC 在本回合吃的豆数
+                            });
+                            // --- 结束记录回合数据 ---
                             // --- 记录日志: 回合结束 ---
 							if (typeof logGameEvent === 'function') {
                                  logGameEvent('RoundEnd', {
@@ -742,9 +977,17 @@ rulesLink.addEventListener("click", (e) => {
                              }
 							all_scores += player.score; // 累加玩家的总得分
 							stage.status = 0; // 在切换前将当前舞台标记为非活动
-							// 直接跳转到结束画面
-							game.setStage(_COIGIG.length + 1); // 跳转到结束画面 (索引 = 总关卡数 + 1)
-                            return; // 阻止本帧的后续更新
+							// 计算下一关索引
+							const nextStageIndex = stage.index + 1;
+
+							// 检查是否还有更多关卡
+							if (nextStageIndex < _COIGIG.length + 2) { // +2因为前两页
+								game.setStage(nextStageIndex);
+							} else {
+								// 没有更多关卡，跳转到结束画面
+								game.setStage(_COIGIG.length + 2);
+							}
+						
 						}
 
 						// 检查玩家是否吃到了一半的豆子 (决策点)
@@ -1361,32 +1604,77 @@ rulesLink.addEventListener("click", (e) => {
                  }
             }
        });
-		//游戏结束
-		
+		/* //游戏结束文字 (位置可调整)
 		stage.createItem({
 			x: game.width / 2,
-			y: game.height * .35,
+			y: game.height * .15, // 稍微上移
 			draw: function (context) {
 				context.fillStyle = '#FFF';
-				context.font = 'bold 48px PressStart2P';
+				context.font = 'bold 36px PressStart2P'; // 可调整大小
 				context.textAlign = 'center';
 				context.textBaseline = 'middle';
-				context.fillText(_LIFE ? 'YOU WIN!' : 'GAME OVER', this.x, this.y);
+				context.fillText('游戏结束', this.x, this.y); // 可以根据输赢调整文字，但简单起见先统一
 			}
-		});
-		//记分
+		}); */
+
+		//记分 Item (修改这里以包含表格)
 		stage.createItem({
 			x: game.width / 2,
-			y: game.height * .5,
+			y: game.height * .1, // 调整 Y 轴起始位置
 			draw: function (context) {
 				context.fillStyle = '#FFF';
-				context.font = '20px PressStart2P';
+				context.font = '16px PressStart2P'; // 总分字体
 				context.textAlign = 'center';
 				context.textBaseline = 'middle';
-				context.fillText('你的总分: ' + (all_scores), this.x, this.y);
-				context.fillText('队友总分: ' + (total_scores-all_scores), this.x, this.y + 30);
-				context.fillText('团队总分: ' + (total_scores), this.x, this.y + 60);
 
+				// --- 1. 显示总计得分 ---
+				let currentY = this.y; // 当前绘制的 Y 坐标
+				context.fillText('总计得分:', this.x, currentY);
+				currentY += 30; // 向下移动
+
+				context.textAlign = 'left'; // 左对齐显示详情
+                let textStartX = this.x - 150; // 左侧文本起始 X
+				context.fillText('  你的总分: ' + all_scores, textStartX, currentY);
+				currentY += 25;
+                // 计算 NPC 总分用于显示
+                let totalNpcScore = roundData.reduce((sum, round) => sum + round.npcBeans, 0);
+				context.fillText('  队友总分: ' + totalNpcScore, textStartX, currentY);
+                // 或者使用推算的: context.fillText('  队友总分: ' + (total_scores - all_scores), textStartX, currentY);
+				currentY += 25;
+				context.fillText('  团队总分: ' + total_scores, textStartX, currentY);
+				currentY += 45; // 表格前的间距
+
+				// --- 2. 显示每轮详情表格 ---
+				context.textAlign = 'center'; // 表头居中
+				context.font = 'bold 16px PressStart2P';
+				context.fillText('每轮详情', this.x, currentY);
+				currentY += 30; // 标题下间距
+
+				// 表头
+				context.font = '14px PressStart2P'; // 表格内容字体可以小一点
+				let headerX_Round = this.x - 130; // 调整各列的 X 坐标
+				let headerX_Player = this.x;
+				let headerX_NPC = this.x + 130;
+				context.fillStyle = '#AAA'; // 表头用灰色
+				context.fillText('轮次', headerX_Round, currentY);
+				context.fillText('你吃的豆数', headerX_Player, currentY);
+				context.fillText('队友吃的豆数', headerX_NPC, currentY);
+                currentY += 5; // 加一点点分割线空间（可选）
+                // context.strokeStyle = '#555'; // 分割线颜色
+                // context.beginPath();
+                // context.moveTo(headerX_Round - 40, currentY);
+                // context.lineTo(headerX_NPC + 80, currentY);
+                // context.stroke();
+				currentY += 20; // 表头后的间距
+
+				// 表格数据行
+				context.fillStyle = '#FFF'; // 数据用白色
+				roundData.forEach(data => { // 遍历记录好的回合数据
+					context.fillText(data.round, headerX_Round, currentY);       // 显示轮次
+					context.fillText(data.playerBeans, headerX_Player, currentY); // 显示玩家豆数
+					context.fillText(data.npcBeans, headerX_NPC, currentY);    // 显示 NPC 豆数
+					currentY += 22; // 下一行的 Y 坐标，调整行间距
+				});
 			}
 		});
 		//事件绑定
