@@ -18,33 +18,34 @@
 
 本 README 文件将指导你完成项目的设置、实验执行和数据处理流程。
 
-## 项目结构
+## 项目目录结构
 
+```
 pac-man-game-main/
-│
-├── PacManDataProcessor/ # (推荐) 存放数据处理脚本和相关文件夹
-│ ├── data/ # 【手动】存放从浏览器下载的原始 .xlsx 数据文件
-│ ├── processed_data/ # 【自动】存放处理后生成的 .csv 结果文件
-│ ├── node_modules/ # (自动生成) 存放 Node.js 依赖库
-│ ├── package.json # (自动生成) Node.js 项目配置文件
-│ ├── package-lock.json # (自动生成) 锁定依赖版本
-│ ├── process_experiment_data.js # 【核心】数据处理脚本
-│ └── watch_data_folder.js # (可选) 自动监控 data 文件夹并处理新文件的脚本
-│
-├── static/ # 存放游戏静态资源 (CSS, 字体, 图片等)
-│ ├── style/
-│ ├── font/
-│ └── script/
-│ ├── game.js # 游戏引擎核心逻辑
-│ └── index.js # 游戏主程序、关卡定义、事件绑定等
-│
-├── game.html # 游戏主页面
-├── index.html # 被试信息填写页面 (入口)
-├── match.html # (可能存在的) 匹配/规则确认页面
-├── login.css # 登录/信息填写页样式
-├── match.css # 匹配页样式
-├── favicon.png # 网站图标
-└── README.md # 本说明文件
+├── PacManDataProcessor/       # 【重要】数据处理模块
+│   ├── data/                  # 【手动】原始实验数据(.xlsx)
+│   ├── processed_data/        # 【自动】处理后数据(.csv)
+│   ├── node_modules/          # (自动生成)
+│   ├── package.json           # npm配置
+│   ├── package-lock.json      # 依赖锁文件
+│   ├── process_experiment_data.js  # 核心处理脚本
+│   └── watch_data_folder.js   # 监控脚本（可选）
+├── static/                    # 静态资源
+│   ├── style/
+│   │   └── index.css          # 游戏样式
+│   ├── font/
+│   │   └── PressStart2P.ttf   # 游戏字体
+│   └── script/
+│       ├── game.js            # 游戏引擎
+│       └── index.js           # 主程序逻辑
+├── game.html                  # 游戏主界面
+├── index.html                 # 被试信息页（入口）
+├── match.html                 # 匹配/规则页
+├── login.css                  # 登录页样式
+├── match.css                  # 匹配页样式
+├── favicon.png                # 网站图标
+└── README.md                  # 项目说明
+```
 
 **注意:** 请确保你的数据处理脚本 (`process_experiment_data.js`, `watch_data_folder.js`) 以及之后生成的 `node_modules`, `package.json` 都位于这个 `PacManDataProcessor` 子文件夹内。
 
