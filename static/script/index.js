@@ -1,3 +1,27 @@
+window.addEventListener('keydown', function(e) {
+    // 检查按下的键是否是方向键或空格键
+    if (
+        e.keyCode === 37 || // Left Arrow
+        e.keyCode === 38 || // Up Arrow
+        e.keyCode === 39 || // Right Arrow
+        e.keyCode === 40 || // Down Arrow
+        e.keyCode === 32    // Space bar (可选，如果你也想阻止空格滚动)
+    ) {
+        // 阻止这些键的默认行为 (如页面滚动)
+        e.preventDefault();
+    }
+}, { passive: false }); // passive: false 很重要，允许 preventDefault
+
+// 可选：如果你想阻止滚轮滚动整个页面（可能会影响内部滚动元素，谨慎使用）
+// window.addEventListener('wheel', function(e) {
+//     e.preventDefault();
+// }, { passive: false });
+
+// 可选：阻止触摸滑动滚动（移动端）
+// window.addEventListener('touchmove', function(e) {
+//     e.preventDefault();
+// }, { passive: false });
+
 const closeRulesButton = document.getElementById("close-rules");
 const knowRulesButton = document.getElementById("know-rules");//"我已了解"按钮
 const rulesLink = document.getElementById("rules-link");
@@ -1540,22 +1564,29 @@ rulesLink.addEventListener("click", (e) => {
 							player.control = { orientation: 2 };
 							keyPressed = true;
 							requestedOrientation = 2;
+							isDirectionKey = true; // 是方向键
 							break;
 						case 38: //上
 							player.control = { orientation: 3 };
 							keyPressed = true;
 							requestedOrientation = 2;
+							isDirectionKey = true; // 是方向键
 							break;
 						case 39: //右
 							player.control = { orientation: 0 };
 							keyPressed = true;
 							requestedOrientation = 2;
+							isDirectionKey = true; // 是方向键
 							break;
 						case 40: //下
 							player.control = { orientation: 1 };
 							keyPressed = true;
 							requestedOrientation = 2;
+							isDirectionKey = true; // 是方向键
 							break;
+					}
+					if (isDirectionKey) {
+                         e.preventDefault(); // <--- 在确认是方向键后，统一在这里阻止默认行为
 					}
 					if (requestedOrientation !== -1) {
 						const inputTimestamp = Date.now(); // **记录按键时间戳**
