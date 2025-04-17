@@ -8,26 +8,73 @@
 
 项目演示(DEMO)地址：https://passer-by.com/pacman/
 
+## 平台主要功能：
+
+1.  **双人协作游戏:** 提供一个玩家（被试）与 NPC（模拟队友）共同完成吃豆任务的环境。
+2.  **行为决策点:** 在玩家完成一定任务量后，提供选择“等待队友”或“继续帮助”的决策节点。
+3.  **详细行为记录:** 记录游戏过程中的关键事件、时间戳、玩家决策、得分等信息。
+4.  **数据导出:** 将原始行为日志导出为 Excel (`.xlsx`) 文件。
+5.  **数据自动处理:** 提供 Node.js 脚本，用于处理导出的 Excel 文件，提取关键指标并生成结构化的 CSV 文件，方便后续统计分析。
+
+本 README 文件将指导你完成项目的设置、实验执行和数据处理流程。
+
+## 项目结构
+
+pac-man-game-main/
+│
+├── PacManDataProcessor/ # (推荐) 存放数据处理脚本和相关文件夹
+│ ├── data/ # 【手动】存放从浏览器下载的原始 .xlsx 数据文件
+│ ├── processed_data/ # 【自动】存放处理后生成的 .csv 结果文件
+│ ├── node_modules/ # (自动生成) 存放 Node.js 依赖库
+│ ├── package.json # (自动生成) Node.js 项目配置文件
+│ ├── package-lock.json # (自动生成) 锁定依赖版本
+│ ├── process_experiment_data.js # 【核心】数据处理脚本
+│ └── watch_data_folder.js # (可选) 自动监控 data 文件夹并处理新文件的脚本
+│
+├── static/ # 存放游戏静态资源 (CSS, 字体, 图片等)
+│ ├── style/
+│ ├── font/
+│ └── script/
+│ ├── game.js # 游戏引擎核心逻辑
+│ └── index.js # 游戏主程序、关卡定义、事件绑定等
+│
+├── game.html # 游戏主页面
+├── index.html # 被试信息填写页面 (入口)
+├── match.html # (可能存在的) 匹配/规则确认页面
+├── login.css # 登录/信息填写页样式
+├── match.css # 匹配页样式
+├── favicon.png # 网站图标
+└── README.md # 本说明文件
+
+**注意:** 请确保你的数据处理脚本 (`process_experiment_data.js`, `watch_data_folder.js`) 以及之后生成的 `node_modules`, `package.json` 都位于这个 `PacManDataProcessor` 子文件夹内。
+
 ## 实验前准备
 
 在运行项目或处理数据前，请确保安装了以下软件：
 
 1.  **Node.js:** 用于运行数据处理脚本。请从 [Node.js 官网](https://nodejs.org/) 下载并安装 LTS 版本。npm (Node Package Manager) 会随 Node.js 一起安装。
 2.  **本地 Web 服务器:** 由于浏览器安全限制，直接从本地文件系统打开 `index.html` 可能导致资源加载或 `localStorage` 访问问题。推荐使用本地 Web 服务器来运行游戏。常用的选择有：
-    *   **`http-server` (基于 Node.js):** 安装命令 `npm install -g http-server`，然后在项目根目录运行 `http-server`。
+    *   **`http-server` (基于 Node.js):** 安装命令 `npm install -g http-server`，然后在项目根目录 (`pac-man-game-main`) 运行 `http-server`。
     *   **VS Code Live Server 扩展:** 如果你使用 Visual Studio Code，可以安装 Live Server 扩展并右键点击 `index.html` 选择 "Open with Live Server"。
     *   其他 WAMP/MAMP/LAMP 等服务器。
 
 ## 安装与设置
 
 1.  **克隆或下载项目:** 获取项目文件到你的本地计算机。
-2.  **安装 Node.js 依赖:**
+2.  **【重要】确认文件位置:** 确保 `process_experiment_data.js` 和 `watch_data_folder.js` (如果使用) 文件位于项目根目录下的 `PacManDataProcessor` 子文件夹内。同时，在此子文件夹内创建 `data` 和 `processed_data` 这两个空的子文件夹。
+3.  **安装 Node.js 依赖:**
     *   打开你的终端（命令提示符、PowerShell、Terminal 等）。
-    *   使用 `cd` 命令导航到 **`PacManDataProcessor` 文件夹** (如果你的脚本和 `package.json` 在那里)。如果你把脚本放在根目录，就 `cd` 到根目录 (`pac-man-game-main`)。
-    *   运行以下命令安装数据处理脚本所需的库：
+    *   **使用 `cd` 命令导航到 `PacManDataProcessor` 子文件夹。** 这是运行 `npm install` 和后续处理脚本的正确位置。
+      ```bash
+      # 示例:
+      cd path/to/your/pac-man-game-main/PacManDataProcessor
+      ```
+    *   如果 `PacManDataProcessor` 文件夹内还没有 `package.json` 文件，先运行 `npm init -y` 来创建它。
+    *   然后运行以下命令安装数据处理脚本所需的库：
       ```bash
       npm install xlsx chokidar
       ```
+      *(如果 `package.json` 文件已存在且包含依赖项，可以直接运行 `npm install`)*
     *   **(Windows PowerShell 用户注意)** 如果遇到 `无法加载文件 ... npm.ps1，因为在此系统上禁止运行脚本` 的错误，请在 **当前 PowerShell 窗口** 运行以下命令以临时允许脚本执行，然后再试一次 `npm install`：
       ```powershell
       Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass -Force
