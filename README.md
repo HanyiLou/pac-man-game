@@ -1,8 +1,9 @@
+# Pac-Man Game with AI Collaboration
 
-Pac-Man Game with AI Collaboration
 这是一个经过修改的Pac-Man游戏，加入了人机协作的特性。玩家可以与AI（NPC）一起收集豆子，并在特定条件下做出协作决策。
 
-版权
+## 版权
+
 源代码由 passer-by.com 制作，为确保实验环境，将游戏界面中作者信息删除。
 
 项目演示(DEMO)地址：https://passer-by.com/pacman/
