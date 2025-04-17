@@ -69,7 +69,7 @@ rulesLink.addEventListener("click", (e) => {
 				'26,23': 1
 			}
 		},
-		{				//第2关
+	/* 	{				//第2关
 			'map': [		//地图数据
 				[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 				[1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
@@ -530,7 +530,7 @@ rulesLink.addEventListener("click", (e) => {
 				'1,27': 1,
 				'26,27': 1
 			}
-		}
+		} */
 	];
 
 	_COLOR = ['#F00', '#F93', '#0CF', '#F9C'],	//NPC颜色
@@ -538,7 +538,7 @@ rulesLink.addEventListener("click", (e) => {
 		_SIN = [0, 1, 0, -1],
 		_LIFE = 1,				//玩家生命值
 		_SCORE = 0;				//玩家得分
-
+	
 	var game = new Game('canvas');
 	//启动页
 	(function () {
@@ -595,137 +595,234 @@ rulesLink.addEventListener("click", (e) => {
 
 		//事件绑定
 		stage.bind('keydown', function (e) {
-			switch (e.keyCode) {
-				case 13:
-				case 32:
-					game.nextStage();
+			switch (e.keyCode)  {
+				case 13: // Enter 回车键
+				case 32: // Space 空格键
+                    // --- 记录日志: 游戏开始 ---
+                    if (typeof logGameEvent === 'function') {
+                        logGameEvent('GameStart');
+                    }
+                    window.currentGameRound = 1; // 设置初始回合数为 1，用于日志记录
+					game.setStage(1); // 跳转到第一个游戏关卡舞台 (索引为 1)
 					break;
 			}
 		});
 	})();
 	//游戏主程序
-	var all_scores,total_scores;
-	all_scores =0,total_scores=0;
+	var all_scores = 0; // 玩家所有回合的总得分 
+	var total_scores = 0; // 所有回合可获得的总豆数 
+	var roundStartTimestamp = 0; // 用于计算回合持续时间
 	(function () {
 		_COIGIG.forEach(function (config, index) {
-			var stage, map, beans, items, player, totalBeans, remainingBeans,_SCORE;
-			_SCORE=0;
+			var stage, map, beans, items, player, totalBeans, remainingBeans;
+            // 注意: 这个作用域内的 _SCORE 似乎每回合重置，可能是回合得分？
+            // 为了清晰起见，如果它只是用于本回合 NPC 的得分，我们重命名它
+            let npcRoundScore = 0; // 本回合NPC得分
 
-			// 计算总豆数
+			// 计算本回合的总豆数
 			totalBeans = 0;
 			config['map'].forEach(row => {
 				row.forEach(cell => {
 					if (cell === 0) totalBeans++;
 				});
 			});
-			total_scores+=totalBeans;
-			// totalBeans += Object.keys(config['goods']).length;不要加能量豆的数量
-			remainingBeans = totalBeans;
-			playerEaten = 0;  // 新增玩家吃豆计数
+			total_scores += totalBeans; // 累加所有回合可能的总豆数
+			remainingBeans = totalBeans; // 本回合剩余豆数
+			
 
 			stage = game.createStage({
 				status: 1,
 				missionTriggered: false, // 添加任务触发标志
 				timeout: 30,
-				init: function() {
-					_SCORE = 0;  // 重置总分数
-					player.score = 0;  // 重置玩家分数
-					this.status = 0;
-					this.timeout = 30;
-					this.missionTriggered = false;
+				roundNumber: index + 1, // 在 stage 对象中存储回合数 (从 1 开始)
+				init: function() {// 当通过 setStage 启动或重置舞台时调用
+					// --- 记录日志: 回合开始 ---
+					window.currentGameRound = this.roundNumber; // 更新全局回合数变量
+                    roundStartTimestamp = Date.now(); // 记录回合开始时间戳
+					
+                    if (typeof logGameEvent === 'function') {
+                        logGameEvent('RoundStart', {
+                            round: this.roundNumber,
+                            totalBeansInRound: totalBeans, // 记录本回合总豆数
+							startTimestamp: roundStartTimestamp // 记录开始时间戳
+                        });
+                    }
+                    npcRoundScore = 0; // 重置本回合NPC得分
+                    player.score = 0;  // 重置本回合玩家得分
+                    remainingBeans = totalBeans; // 重置本回合剩余豆数
+                    this.status = 1; // 确保初始化/重置时状态为活动
+					this.timeout = 30; // 重置 timeout?
+					this.missionTriggered = false; // 重置任务触发标志
+
+                    // 重置物体 (玩家, NPCs)
 					items.forEach(function (item) {
-						item.status = 1;
-						item.timeout = 0;
+                        // 重置 NPC 特定状态 (如果需要)
+                        if (item.type === 2) { // 如果是 NPC
+                             Object.assign(item, item._settings, item._params); // 使用 game.js 模板中的基础重置
+                             item.coord = { x: 18 + item._id, y: 8 }; // 重置位置 (根据需要调整)
+                             item.vector = { x: 12 + item._id, y: 14 }; // 重置目标?
+                             item.orientation = 3; // 重置方向为上
+                             item.status = 1; // 重置状态为正常
+                             item.timeout = Math.floor(Math.random() * 120); // 重置随机超时
+                             item.startDelay = Math.floor(Math.random() * 30) + 90; // 重置随机启动延迟
+                             item.active = false; // 重置为非活动状态
+                             item.path = []; // 清空路径
+                        }
 					});
-					player.coord.x = 13.5;
-					player.coord.y = 23;
-					player.orientation = 2;
-					player.visible = true;
-					player.isWaiting = false;
-					player.isHelping = false;
-					var pos = map.coord2position(player.coord.x, player.coord.y);
+
+                    // 重置玩家特定状态
+					player.coord = { x: 13.5, y: 23 }; // 重置玩家位置
+					player.orientation = 2; // 重置玩家方向为左
+					player.control = {}; // 清除待处理的控制输入
+					player.visible = true; // 设为可见
+					player.isWaiting = false; // 重置等待状态
+					player.isHelping = false; // 重置帮助状态
+                    player.moving = false; // 重置移动标志
+					var pos = map.coord2position(player.coord.x, player.coord.y); // 计算画布坐标
 					player.x = pos.x;
 					player.y = pos.y;
-				},
-				update: function () {
+
+                    // 重置豆子地图 (如果 game.js 的 resetMaps 不能自动处理)
+                    if (beans && beans._params && beans._params.data) {
+                       beans.data = JSON.parse(JSON.stringify(beans._params.data)); // 深度拷贝原始地图数据
+                    }
+				}, // End stage.init
+				update: function () { // 每帧更新函数
 					var stage = this;
-					if (stage.status == 1) {								//场景正常运行
-						items.forEach(function (item) {
-							if (player.isWaiting) return;
-							if (map && !map.get(item.coord.x, item.coord.y) && !map.get(player.coord.x, player.coord.y)) {
-								var dx = item.x - player.x;
-								var dy = item.y - player.y;
-								if (dx * dx + dy * dy < 750 && item.status != 4 && !player.isWaiting) {		//物体检测
-									if (item.status == 3) {
-										item.status = 4;
-										_SCORE += 10;
-									} else {
-										//stage.status = 3;
-										//stage.timeout = 30;
-									}
-								}
-							}
+					if (stage.status == 1) { // 场景正常运行时
+
+						// 碰撞检测 (NPC vs 玩家) - 简化版，原代码大部分被注释掉了
+						items.forEach(function (item) { // item 在这里是 NPC
+							if (player.isWaiting || player.status === 3) return; // 如果玩家在等待或已“死亡”，则跳过
+							if (item.status === 1 || item.status === 3) { // 如果 NPC 状态是正常或害怕
+                                // 检查 NPC 和玩家是否都在有效的格子内
+                                if (map && map.get(item.coord.x, item.coord.y) <= 0 && map.get(player.coord.x, player.coord.y) <= 0) {
+                                    var dx = item.x - player.x;
+                                    var dy = item.y - player.y;
+                                    if (dx * dx + dy * dy < 750) { // 简单的碰撞半径检测 (约 27 像素)
+                                        if (item.status == 3) { // NPC 处于害怕状态
+                                            item.status = 4; // NPC 被吃 (状态4似乎未在别处使用，也许只是重置?)
+                                            // --- 记录日志: NPC 被玩家吃掉 (害怕状态) ---
+                                             if (typeof logGameEvent === 'function') {
+                                                 logGameEvent('NPCStateChange', { npcId: item._id, newState: 'eaten_scared', playerPosition: {x: player.coord.x, y: player.coord.y} });
+                                             }
+                                            // item.coord = { x: 18 + item._id, y: 8 }; // 送回起点
+                                            // item.status = 1; // 重置状态为正常
+                                            // _SCORE += 10; // 示例得分
+                                        } else if (item.status == 1) { // NPC 处于正常状态
+                                            // --- 记录日志: 玩家被抓住 ---
+                                            if (typeof logGameEvent === 'function') {
+                                                 logGameEvent('PlayerStateChange', { newState: 'caught', npcId: item._id, npcPosition: {x: item.coord.x, y: item.coord.y} });
+                                             }
+                                            // 原代码注释了这部分，游戏似乎不处理生命值/死亡
+                                            // stage.status = 3; // 设置为玩家被抓状态
+                                            // stage.timeout = 30; // 用于死亡动画的超时?
+                                            // _LIFE--; // 减少生命值 (如果使用生命值系统)
+                                        }
+                                    }
+                                }
+                            }
 						});
-						
+
 						// 检查是否所有豆子都被吃完
-						if (remainingBeans <= 0) {
-							all_scores+=player.score;
-							game.nextStage();
+						if (remainingBeans <= 0 && stage.status === 1) { // 确保只触发一次且在活动状态下
+							// --- 记录日志: 回合结束 (所有豆子吃完) ---
+                            const roundEndTime = Date.now(); // **记录回合结束时间戳**
+                            const roundDuration = roundEndTime - roundStartTimestamp; // **计算回合用时**
+                            // --- 记录日志: 回合结束 ---
+							if (typeof logGameEvent === 'function') {
+                                 logGameEvent('RoundEnd', {
+                                     round: stage.roundNumber,
+                                     reason: 'all_beans_eaten', // 结束原因
+									 playerRoundScore: player.score, // **记录玩家本回合得分**
+									 npcRoundScore: npcRoundScore, // **记录NPC本回合得分**
+									 endTimestamp: roundEndTime, // 记录结束时间戳
+									 durationMs: roundDuration // **记录回合用时**
+                                 });
+                             }
+							all_scores += player.score; // 累加玩家的总得分
+							stage.status = 0; // 在切换前将当前舞台标记为非活动
+							// 直接跳转到结束画面
+							game.setStage(_COIGIG.length + 1); // 跳转到结束画面 (索引 = 总关卡数 + 1)
+                            return; // 阻止本帧的后续更新
 						}
-						
-						// 检查NPC是否已经吃完所有豆子
-						if (player.isWaiting || player.isHelping || (remainingBeans <= 0)) {
-							let hasRemainingBeans = false;
-							for (let y = 0; y < beans.data.length; y++) {
-								for (let x = 0; x < beans.data[y].length; x++) {
-									if (beans.data[y][x] === 0) {
-										hasRemainingBeans = true;
-										break;
-									}
-								}
-								if (hasRemainingBeans) break;
-							}
-							
-							if (!hasRemainingBeans) {
-								all_scores+=player.score;
-								game.nextStage();
-							}
-						}
-					} else if (stage.status == 3) {		//场景临时状态
+
+						// 检查玩家是否吃到了一半的豆子 (决策点)
+                        // 仅当玩家处于活动状态 (非等待/帮助) 且弹窗未显示时检查
+						if (player.score >= Math.floor(totalBeans / 2) && !stage.missionTriggered && !player.isWaiting && !player.isHelping) {
+							stage.missionTriggered = true; // 标记任务已触发
+							const decisionPointTimestamp = Date.now(); // **记录到达决策点的时间戳**
+							// --- 记录日志: 到达决策点 ---
+                            if (typeof logGameEvent === 'function') {
+                                logGameEvent('HalfBeansReached', {
+                                    playerScore: player.score,
+                                    beansThreshold: Math.floor(totalBeans / 2),
+                                    timestamp: decisionPointTimestamp // **记录时间戳**
+                                });
+                            }
+							stage.status = 2; // 暂停游戏
+							document.getElementById('missionPopup').style.display = 'block'; // 显示选择弹窗
+
+							// 为等待/帮助按钮添加事件监听器 (确保只添加一次或进行管理)
+                            // 如果可能，最好在 update 循环之外定义这些监听器
+                            const waitBtn = document.getElementById('waitBtn');
+                            const helpBtn = document.getElementById('helpBtn');
+
+                            // 使用 .onclick 可能会覆盖之前的监听器，如果需要，考虑使用 addEventListener 并配合移除逻辑
+                            waitBtn.onclick = function () {
+								const choiceTimestamp = Date.now(); // **记录做出选择的时间戳**
+                                document.getElementById('missionPopup').style.display = 'none'; // 隐藏弹窗
+                                // --- 记录日志: 做出选择 ---
+                                if (typeof logGameEvent === 'function') {
+                                    logGameEvent('ChoiceMade', {
+                                        choice: 'wait', // **记录选择**
+                                        timestamp: choiceTimestamp, // **记录时间戳**
+                                        timeSinceDecisionPointMs: choiceTimestamp - decisionPointTimestamp // 记录决策耗时
+                                    });
+                                }
+                                player.isWaiting = true; // 设置玩家为等待模式
+                                player.visible = false; // 隐藏玩家图像
+                                stage.status = 1; // 恢复游戏运行
+                                waitBtn.onclick = null; // 移除监听器防止重复调用
+                                helpBtn.onclick = null;
+                            };
+
+                            helpBtn.onclick = function () {
+								const choiceTimestamp = Date.now(); // **记录做出选择的时间戳**
+                                document.getElementById('missionPopup').style.display = 'none'; // 隐藏弹窗
+                                // --- 记录日志: 做出选择 ---
+								if (typeof logGameEvent === 'function') {
+                                    logGameEvent('ChoiceMade', {
+                                        choice: 'help', // **记录选择**
+                                        timestamp: choiceTimestamp, // **记录时间戳**
+                                        timeSinceDecisionPointMs: choiceTimestamp - decisionPointTimestamp // 记录决策耗时
+                                     });
+                                }
+                                player.isHelping = true; // 设置玩家为帮助模式 (继续游戏)
+                                stage.status = 1; // 恢复游戏运行
+                                waitBtn.onclick = null; // 移除监听器
+                                helpBtn.onclick = null;
+                            };
+						} // End 检查半数豆子
+					} else if (stage.status == 3) { // 玩家被抓状态 (当前未使用)
 						// if(!stage.timeout){
-						// 	_LIFE--;
-						// 	if(_LIFE){
-						// 		stage.resetItems();
-						// 	}else{
-						// 		var stages = game.getStages();
-						// 		game.setStage(stages.length-1);
-						// 		return false;
+                        //     // 玩家死亡逻辑曾在此处
+                        //     // --- 记录日志: 玩家死亡确认 ---
+                        //     if (typeof logGameEvent === 'function') { logGameEvent('PlayerDeath', { livesLeft: _LIFE }); }
+						// 	if(_LIFE > 0){
+						// 		stage.resetItems(); // 重置物体位置
+                        //         stage.status = 1; // 恢复游戏
+						// 	} else {
+                        //         // --- 记录日志: 游戏结束 (无剩余生命) ---
+                        //         if (typeof logGameEvent === 'function') { logGameEvent('GameOver', { finalScore: all_scores }); }
+						// 		game.setStage(_COIGIG.length + 1); // 直接跳转到结束画面
+						// 		return false; // 停止更新
 						// 	}
 						// }
 					}
-						// 添加豆子数量检查
-					if (player.score >= totalBeans / 2 && !stage.missionTriggered) {
-						stage.missionTriggered = true;
-						stage.status = 2; // 暂停游戏
-						document.getElementById('missionPopup').style.display = 'block';
-						
-						//等待
-						document.getElementById('waitBtn').addEventListener('click', function () {
-							document.getElementById('missionPopup').style.display = 'none';
-							stage.status = 1; // 恢复游戏运行
-							player.visible = false; // 隐藏玩家
-							player.isWaiting = true; // 设置玩家为等待模式
-						});
-						
-						//帮助
-						document.getElementById('helpBtn').addEventListener('click', function () {
-							document.getElementById('missionPopup').style.display = 'none';
-							stage.status = 1; // 恢复游戏运行
-							player.isHelping = true; // 设置玩家为协助模式
-						});
-					}
-				}
-			});
+                    // stage.status == 2 是暂停状态, 不需要更新
+				} // End of stage.update
+			}); // End of game.createStage for game levels
 
 			//绘制地图
 			map = stage.createMap({
@@ -832,40 +929,41 @@ rulesLink.addEventListener("click", (e) => {
 				y: 80,
 				draw: function (context) {
 					// 显示玩家个人得分
+					// 显示玩家个人得分
 					context.font = 'bold 24px PressStart2P';
 					context.textAlign = 'left';
 					context.textBaseline = 'bottom';
-					context.fillStyle = '#C33';
+					context.fillStyle = '#C33'; // 红色标题
 					context.fillText('你的分数', this.x, this.y - 62 + 10);
 					context.font = '24px PressStart2P';
 					context.textAlign = 'left';
 					context.textBaseline = 'top';
-					context.fillStyle = '#FFF';
+					context.fillStyle = '#FFF'; // 白色分数
 					context.fillText(player.score, this.x + 12, this.y - 52+ 10);
-					
-					// 显示总得分
+
+					// 显示NPC得分 (使用 npcRoundScore)
 					context.font = 'bold 24px PressStart2P';
 					context.textAlign = 'left';
 					context.textBaseline = 'bottom';
-					context.fillStyle = '#C33';
-					context.fillText('总分', this.x, this.y+ 20);
+					context.fillStyle = '#4CAF50'; // 绿色标题表示队友/NPC
+					context.fillText('队友分数', this.x, this.y+ 20);
 					context.font = '24px PressStart2P';
 					context.textAlign = 'left';
 					context.textBaseline = 'top';
-					context.fillStyle = '#FFF';
-					context.fillText(_SCORE, this.x + 12, this.y + 20+ 10);
-					
+					context.fillStyle = '#FFF'; // 白色分数
+					context.fillText(npcRoundScore, this.x + 12, this.y + 20+ 10);
+
 					// 显示关卡
 					context.font = 'bold 24px PressStart2P';
 					context.textAlign = 'left';
 					context.textBaseline = 'bottom';
-					context.fillStyle = '#C33';
+					context.fillStyle = '#C33'; // 红色标题
 					context.fillText('轮次', this.x, this.y + 82+ 10);
 					context.font = '24px PressStart2P';
 					context.textAlign = 'left';
 					context.textBaseline = 'top';
-					context.fillStyle = '#FFF';
-					context.fillText(index + 1, this.x + 12, this.y + 92+ 10);
+					context.fillStyle = '#FFF'; // 白色数字
+					context.fillText(stage.roundNumber, this.x + 12, this.y + 92+ 10); // 使用 stage.roundNumber
 				}
 			});
 			//状态文字
@@ -883,32 +981,29 @@ rulesLink.addEventListener("click", (e) => {
 					}
 				}
 			});
-			//生命值
+
+			//豆子数量显示 (原为生命值显示)
 			stage.createItem({
 				x: 705,
 				y: 510,
-				width: 30,
-				height: 30,
+				width: 30, // 图标宽度 (未使用)
+				height: 30, // 图标高度 (未使用)
 				draw: function (context) {
-					var max = Math.min(_LIFE - 1, 5);
-					for (var i = 0; i < max; i++) {
-						var x = this.x + 40 * i, y = this.y;
-						context.fillStyle = '#FFE600';
-						context.beginPath();
-						context.arc(x, y, this.width / 2, .15 * Math.PI, -.15 * Math.PI, false);
-						context.lineTo(x, y);
-						context.closePath();
-						context.fill();
-					}
-					context.font = '18px PressStart2P';
+					// 绘制一个豆子图标? 或者只显示文字。
+					var x = this.x -15 , y = this.y; // 调整位置
+                    context.fillStyle = '#F5F5DC'; // 豆子颜色
+                    context.fillRect(x - 5, y - 5, 10, 10); // 绘制一个方形代表豆子
+
+					context.font = '18px PressStart2P'; // "X" 的字体
 					context.textAlign = 'left';
 					context.textBaseline = 'center';
-					context.fillStyle = '#FFF';
-					context.fillText('X', this.x - 15, this.y + 30);
-					context.font = '24px PressStart2P';
-					context.fillText((remainingBeans), this.x + 10, this.y + 26);//生命值,画面上的×0就来自这里
+					context.fillStyle = '#FFF'; // 白色 "X"
+					context.fillText('X', this.x + 10, this.y); // 在图标旁边绘制 "X"
+					context.font = '24px PressStart2P'; // 数量的字体
+					context.fillText(remainingBeans, this.x + 40, this.y); // 显示剩余豆子数量
 				}
 			});
+			
 			//NPC
 			for (var i = 0; i < 1; i++) {//1个NPC
 				stage.createItem({
@@ -921,10 +1016,13 @@ rulesLink.addEventListener("click", (e) => {
 					vector: { x: 12 + i, y: 14 },
 					type: 2,
 					frames: 10,
-					speed: 0.5,//NPC的速度
+					speed: 10,//NPC的速度
 					timeout: Math.floor(Math.random() * 120),
+					status: 1, // 初始状态 (正常)
+                    _id: i, // 明确分配 ID 用于日志记录
+                    path: [], // 存储寻路路径
 					startDelay: Math.floor(Math.random() * 30) + 90,  // 0.5~2秒的延迟（60帧=1秒）
-					active: false,  // 是否开始活动
+					active: false,  // 是否开始活动 初始为非活动状态
 					update: function () {
 						// 如果还在延迟启动阶段
 						if (!this.active) {
@@ -932,8 +1030,13 @@ rulesLink.addEventListener("click", (e) => {
 								this.startDelay--;
 								return;  // 直接返回，不执行任何移动
 							} else {
-								this.active = true;  // 延迟结束，激活NPC
+								this.active = true; // 延迟结束，激活 NPC
+                                 // --- 记录日志: NPC 激活 ---
+                                 if (typeof logGameEvent === 'function') {
+                                     logGameEvent('NPCStateChange', { npcId: this._id, newState: 'activated' }); // 记录状态变为 'activated'
+                                 }
 							}
+							
 						}
 
 						var new_map;
@@ -945,9 +1048,21 @@ rulesLink.addEventListener("click", (e) => {
 							if (!beans.get(this.coord.x, this.coord.y)) {
 								// 如果有豆子，将其移除
 								beans.set(this.coord.x, this.coord.y, 1);
-								_SCORE++; // 增加总分数
+								npcRoundScore++; // 增加 NPC 本回合得分
 								remainingBeans--; // 减少剩余豆子
+								const eatTimestamp = Date.now(); // **记录 NPC 吃豆时间戳**
+								// --- 记录日志: NPC 吃豆 ---
+                                if (typeof logGameEvent === 'function') {
+                                    logGameEvent('NPCBeanEaten', {
+                                        npcId: this._id,
+                                        position: { x: this.coord.x, y: this.coord.y },
+                                        npcRoundScore: npcRoundScore,
+                                        remainingBeans: remainingBeans,
+                                        timestamp: eatTimestamp // **记录时间戳**
+                                    });
+                                }
 							}
+							
 
 							if (this.status == 1) {
 								if (!this.timeout) { // 定时器
@@ -1088,7 +1203,8 @@ rulesLink.addEventListener("click", (e) => {
 					if (this.isWaiting) {
 						return;
 					}
-					
+					const currentTileX = Math.floor(this.coord.x); // 先获取当前格子
+                    const currentTileY = Math.floor(this.coord.y);
 					if (!coord.offset) {  // 在格子中心点
 						if (typeof this.control.orientation != 'undefined') {
 							// 检查前方格子
@@ -1098,6 +1214,7 @@ rulesLink.addEventListener("click", (e) => {
 								this.orientation = this.control.orientation;
 								if (nextValue < 0) {
 									// 传送门逻辑
+									if (typeof logGameEvent === 'function') { logGameEvent('PlayerPortal', { from: {x: coord.x, y:coord.y}, timestamp: Date.now() }); }
 									this.x -= map.size * (map.x_length - 1) * _COS[this.orientation];
 									this.y -= map.size * (map.y_length - 1) * _SIN[this.orientation];
 									this.moving = false;
@@ -1116,9 +1233,22 @@ rulesLink.addEventListener("click", (e) => {
 						}
 					} else {  // 在格子之间移动
 						if (!beans.get(this.coord.x, this.coord.y)) {    //吃豆
+							const eatTimestamp = Date.now(); // **记录玩家吃豆时间戳**
+                        	const isPowerPellet = !!config['goods'][currentTileX + ',' + currentTileY];
+                        	beans.set(currentTileX, currentTileY, 1);
 							_SCORE++; 
 							this.score++; // 增加玩家的个人分数
 							remainingBeans--;
+							// --- 记录日志: 玩家吃豆 ---
+							if (typeof logGameEvent === 'function') {
+								logGameEvent('PlayerBeanEaten', {
+									position: { x: currentTileX, y: currentTileY },
+									isPowerPellet: isPowerPellet,
+									playerRoundScore: this.score,
+									remainingBeans: remainingBeans,
+									timestamp: eatTimestamp // **记录时间戳**
+								});
+							}
 							beans.set(this.coord.x, this.coord.y, 1);
 						}
 						// 继续移动到格子中心
@@ -1153,6 +1283,7 @@ rulesLink.addEventListener("click", (e) => {
 					return;
 				}
 				if (!keyPressed) {  // 只有当没有按键被按下时才处理新的按键
+					let requestedOrientation = -1;
 					switch (e.keyCode) {
 						case 13: //回车
 							if (stage.status == 0) {    //游戏开始
@@ -1165,20 +1296,37 @@ rulesLink.addEventListener("click", (e) => {
 						case 37: //左
 							player.control = { orientation: 2 };
 							keyPressed = true;
+							requestedOrientation = 2;
 							break;
 						case 38: //上
 							player.control = { orientation: 3 };
 							keyPressed = true;
+							requestedOrientation = 2;
 							break;
 						case 39: //右
 							player.control = { orientation: 0 };
 							keyPressed = true;
+							requestedOrientation = 2;
 							break;
 						case 40: //下
 							player.control = { orientation: 1 };
 							keyPressed = true;
+							requestedOrientation = 2;
 							break;
 					}
+					if (requestedOrientation !== -1) {
+						const inputTimestamp = Date.now(); // **记录按键时间戳**
+						// --- 记录日志: 玩家输入 ---
+						if (typeof logGameEvent === 'function') {
+							logGameEvent('PlayerInput', {
+								key: e.key || e.code || e.keyCode,
+								requestedOrientation: requestedOrientation,
+								timestamp: inputTimestamp // **记录时间戳**
+							   });
+						}
+						
+				
+				   }
 				}
 			});
 
@@ -1193,8 +1341,28 @@ rulesLink.addEventListener("click", (e) => {
 	})();
 	//结束画面
 	(function () {
-		var stage = game.createStage();
+		var stage = game.createStage({
+            init: function() { // 添加 init 函数
+                 this.status = 1; // 确保状态激活
+                 // --- 记录日志: 游戏结束画面 ---
+                 if (typeof logGameEvent === 'function') {
+                     logGameEvent('GameEnd', {
+                          finalPlayerTotalScore: all_scores, // 玩家所有回合总分
+                          finalNpcTotalScore: total_scores - all_scores, // NPC 所有回合总分 (推算)
+                          finalTeamTotalScore: total_scores, // 团队总分 (所有豆子数)
+                          endTimestamp: Date.now() // 记录到达结束画面的时间戳
+                        });
+                 }
+                 // 显示导出按钮
+                 if (typeof showExportButton === 'function') {
+                      showExportButton();
+                 } else {
+                      console.error("结束画面无法找到 showExportButton 函数。");
+                 }
+            }
+       });
 		//游戏结束
+		
 		stage.createItem({
 			x: game.width / 2,
 			y: game.height * .35,
