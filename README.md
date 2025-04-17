@@ -1,7 +1,13 @@
 
-**注意:** `PacManDataProcessor` 文件夹是推荐的结构，用于组织数据处理部分。如果你将脚本放在根目录，请相应调整路径。
+Pac-Man Game with AI Collaboration
+这是一个经过修改的Pac-Man游戏，加入了人机协作的特性。玩家可以与AI（NPC）一起收集豆子，并在特定条件下做出协作决策。
 
-## 先决条件
+版权
+源代码由 passer-by.com 制作，为确保实验环境，将游戏界面中作者信息删除。
+
+项目演示(DEMO)地址：https://passer-by.com/pacman/
+
+## 实验前准备
 
 在运行项目或处理数据前，请确保安装了以下软件：
 
