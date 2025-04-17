@@ -6,6 +6,46 @@
 
 	<link rel="shortcut icon" href="favicon.png">
 	<link rel="stylesheet" href="./static/style/index.css">
+	<script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
+    <style>
+        /* 为导出按钮添加样式 */
+        #exportButton {
+            position: fixed; /* 固定位置 */
+            bottom: 20px;   /* 距离底部20px */
+            right: 20px;    /* 距离右侧20px */
+            padding: 10px 15px;
+            background-color: #dc3545; /* 红色背景 */
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            z-index: 1001; /* 确保在其他元素之上 */
+           /*  display: none; /* 初始隐藏，游戏结束后显示 */ */
+            font-family: sans-serif; /* 使用更通用的字体 */
+        }
+        #exportButton:disabled {
+            background-color: #6c757d; /* 禁用时灰色 */
+            cursor: not-allowed;
+        }
+        /* 确保 PressStart2P 字体能被加载 */
+        @font-face {
+             font-family: 'PressStart2P';
+             src: url('./static/font/PressStart2P.ttf') format('truetype');
+        }
+        /* 应用字体到需要的地方，如果 CSS 中没有指定 */
+        body, button, input, select, textarea {
+             /* 可以考虑设置一个基础字体 */
+             font-family: sans-serif;
+        }
+        /* 明确指定游戏标题等使用像素字体 */
+        h1, .mod-panel .hd p, #scoreboard p, #missionPopup p, #scoreboard div, #scoreboard span {
+             /* 假设这些地方需要像素字体 */
+             /* font-family: 'PressStart2P', sans-serif; */ /* 按需取消注释 */
+        }
+        /* 游戏内的分数显示等可能也需要 */
+        /* 例如，在 index.js 的 stage.createItem draw 函数中设置 context.font */
+    </style>
 	<script type="text/javascript">
 		
 	</script>
@@ -44,7 +84,7 @@
 				<h1>双人吃豆游戏</h1>
 			</div>
 			<div class="bd">
-				<canvas id="canvas" width="960" height="640">不支持画布</canvas>
+				<canvas id="canvas" width="960" height="720">不支持画布</canvas>
 			</div>
 			<!-- <div class="ft">
 				<div class="info">
@@ -56,14 +96,175 @@
 		</div>
 
 	</div>
+	<script>
+        let participantInfo = null; // 存储从 localStorage 读取的用户信息
+        let gameLog = [];       // 存储游戏事件日志
+        const EXPORT_BUTTON_ID = 'exportButton'; // 导出按钮的 ID
+        const DISPLAY_ID_SPAN_ID = 'displayParticipantId'; // 显示 ID 的 span
+
+        // --- 1. 记录游戏事件的函数 ---
+        // **全局可访问，以便 game.js/index.js 可以调用**
+        function logGameEvent(eventType, details = {}) {
+            const timestamp = Date.now();
+            const logEntry = {
+                timestamp: timestamp,
+                isoTime: new Date(timestamp).toISOString(),
+                round: window.currentGameRound || 'N/A', // 使用全局回合数
+                eventType: eventType,
+                details: details // 可以是任何对象，记录事件细节
+            };
+            gameLog.push(logEntry);
+            console.log("事件已记录 (Event Logged):", logEntry); // 调试输出
+        }
+
+        // --- 2. 页面加载时的初始化 ---
+        document.addEventListener('DOMContentLoaded', function() {
+            const exportButton = document.getElementById(EXPORT_BUTTON_ID);
+            const displayIdSpan = document.getElementById(DISPLAY_ID_SPAN_ID);
+
+            // a. 获取并验证用户信息
+            const userInfoString = localStorage.getItem('participantInfo');
+            if (!userInfoString) {
+                alert('未找到被试信息，将被重定向回信息填写页面。');
+                window.location.replace('index.html');
+                return;
+            }
+            try {
+                participantInfo = JSON.parse(userInfoString);
+                console.log('游戏页面加载。用户信息:', participantInfo);
+                if (displayIdSpan) {
+                    displayIdSpan.textContent = participantInfo.participant_id || '未知';
+                } else {
+                    console.warn(`未找到 ID 为 "${DISPLAY_ID_SPAN_ID}" 的元素。`);
+                }
+                 // 在确认被试信息后记录页面加载事件
+                logGameEvent('GamePageLoaded', { screenWidth: window.innerWidth, screenHeight: window.innerHeight });
+
+            } catch (e) {
+                alert('被试信息格式错误，将被重定向回信息填写页面。');
+                localStorage.removeItem('participantInfo');
+                window.location.replace('index.html');
+                return;
+            }
+
+            // b. 为导出按钮绑定事件 (初始隐藏)
+            if (exportButton) {
+                exportButton.addEventListener('click', exportDataToExcel);
+            } else {
+                console.error(`未找到 ID 为 "${EXPORT_BUTTON_ID}" 的导出按钮。`);
+            }
+
+            // c. **重要**: 确保你的游戏逻辑脚本 (game.js, index.js) 在这里之后加载
+            //    或者，确保它们在 DOMContentLoaded 之后执行，并且能够访问到 logGameEvent 函数
+
+            // d. 初始游戏回合数 (游戏开始时会更新)
+             window.currentGameRound = 0;
+        });
+
+        // --- 3. 显示导出按钮的函数 ---
+        function showExportButton() {
+             const exportButton = document.getElementById(EXPORT_BUTTON_ID);
+             if (exportButton) {
+                 exportButton.style.display = 'block'; // 显示按钮
+                 console.log("游戏结束，导出按钮已显示。");
+             }
+        }
+
+        // --- 4. 导出数据到 Excel 的函数 ---
+        function exportDataToExcel() {
+            // (函数内容与之前回答一致，包含 participantInfo 检查, XLSX 库检查, SheetJS 调用逻辑)
+            if (!participantInfo) { alert('错误：无法导出数据，缺少被试信息。'); return; }
+            if (!window.XLSX) { alert('错误：Excel导出库(SheetJS)未加载。'); return; }
+            // ... (准备两个 Sheet 的数据) ...
+            // ... (创建 Workbook 和 Worksheet) ...
+            // ... (设置列宽 - 可选) ...
+            // ... (添加 Worksheet 到 Workbook) ...
+            // ... (生成文件名并触发下载) ...
+            const exportButton = document.getElementById(EXPORT_BUTTON_ID);
+            if(exportButton) exportButton.disabled = true; // 防止重复点击
+            console.log("开始导出数据...");
+            logGameEvent('ExportButtonClicked', { timestamp: Date.now() }); // 记录导出事件
+
+            try {
+                // a. 准备 Sheet1: 被试信息
+                const infoSheetData = [
+                    ["项目", "值"],
+                    ["被试编号", participantInfo.participant_id],
+                    ["姓名", participantInfo.name],
+                    ["性别", participantInfo.gender],
+                    ["出生日期", participantInfo.birthDate],
+                    ["游戏ID", participantInfo.game_id],
+                    ["实验开始时间", participantInfo.experimentStartTime],
+                    ["数据导出时间", new Date().toISOString()]
+                ];
+                // b. 准备 Sheet2: 游戏行为日志
+                const gameLogHeaders = ["时间戳(ms)", "ISO时间", "回合", "事件类型"];
+                const detailKeys = new Set();
+                gameLog.forEach(log => { if (log.details && typeof log.details === 'object') { Object.keys(log.details).forEach(key => detailKeys.add(key)); } });
+                const detailKeyArray = Array.from(detailKeys);
+                gameLogHeaders.push(...detailKeyArray);
+                gameLogHeaders.push("原始Details(JSON)");
+                const gameSheetData = [gameLogHeaders];
+                gameLog.forEach(log => {
+                    const row = [log.timestamp, log.isoTime, log.round, log.eventType];
+                    const detailsObj = log.details && typeof log.details === 'object' ? log.details : {};
+                    detailKeyArray.forEach(key => { row.push(detailsObj[key] !== undefined ? detailsObj[key] : ''); });
+                    row.push(JSON.stringify(log.details));
+                    gameSheetData.push(row);
+                });
+                // c. 创建 Workbook 和 Worksheet
+                const wb = XLSX.utils.book_new();
+                const wsInfo = XLSX.utils.aoa_to_sheet(infoSheetData);
+                const wsGame = XLSX.utils.aoa_to_sheet(gameSheetData);
+                // d. 设置列宽 (可选)
+                wsInfo['!cols'] = [{ wch: 20 }, { wch: 30 }];
+                const gameCols = gameLogHeaders.map((h, index) => {
+                    if (index < 4) return { wch: 18 };
+                    if (h === "原始Details(JSON)") return { wch: 40 };
+                    return { wch: 15 };
+                });
+                 wsGame['!cols'] = gameCols;
+                // e. 添加 Worksheet 到 Workbook
+                XLSX.utils.book_append_sheet(wb, wsInfo, "被试信息");
+                XLSX.utils.book_append_sheet(wb, wsGame, "游戏行为记录");
+                // f. 生成文件名并触发下载
+                const fileName = `${participantInfo.participant_id}.xlsx`;
+                XLSX.writeFile(wb, fileName);
+                console.log(`数据已导出为 ${fileName}`);
+                if (exportButton) { exportButton.textContent = '数据已导出'; }
+            } catch (error) {
+                console.error("导出 Excel 时出错:", error);
+                alert("导出数据时发生错误，请检查控制台获取详细信息。\n错误: " + error.message);
+                if (exportButton) exportButton.disabled = false;
+            }
+        } // end exportDataToExcel
+
+    </script>
+
+    <!-- **在加载游戏逻辑脚本之前加载日志记录函数** -->
 	<script src="./static/script/game.js"></script>
 	<script src="./static/script/index.js"></script>
 	<!-- 在body末尾添加 -->
+	<div class="wrapper">
+		<div class="mod-panel">
+			<div class="hd">
+			 <!-- 显示被试编号，方便确认 -->
+                <p style="text-align: center; font-size: 0.9em; color: #aaa;">被试编号: <span id="displayParticipantId">加载中...</span></p>
+			</div>
+			<div class="bd">
+				<canvas id="canvas" width="960" height="10">不支持画布</canvas>
+			</div>
+            <!-- 移除了原有的底部信息 -->
+		</div>
+	</div>
+
+    <!-- 添加导出按钮 -->
+    <button id="exportButton">结束实验并导出数据</button>
 	<div id="missionPopup"
 		style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #333; padding: 20px; border-radius: 10px; color: white; text-align: center; z-index: 1000;">
 		<p>您已完成您的任务！</p>
 		<button id="waitBtn" style="margin: 10px; padding: 8px 20px; background: #4CAF50;">等待队友</button>
-		<button id="helpBtn" style="margin: 10px; padding: 8px 20px; background: #2196F3;">帮助队友</button>
+		<button id="helpBtn" style="margin: 10px; padding: 8px 20px; background: #2196F3;">继续吃豆</button>
 	</div>
 </body>
 

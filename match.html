@@ -159,7 +159,41 @@
 
 
   </div>
+  <script>
+    // 页面加载时检查用户信息是否存在
+    document.addEventListener('DOMContentLoaded', function() {
+        const userInfoString = localStorage.getItem('participantInfo');
+        if (!userInfoString) {
+            alert('未找到被试信息，将被重定向回信息填写页面。');
+            // 使用 replace 防止用户通过后退按钮回到此页面
+            window.location.replace('index.html');
+            return; // 阻止后续脚本执行
+        }
+        try {
+             // 尝试解析以确保数据有效
+             const userInfo = JSON.parse(userInfoString);
+             console.log('Match page loaded. User info found:', userInfo.participant_id);
+             // 在这里可以根据需要显示一些用户信息或进行其他初始化
+        } catch (e) {
+             alert('被试信息格式错误，将被重定向回信息填写页面。');
+             localStorage.removeItem('participantInfo'); // 清除错误数据
+             window.location.replace('index.html');
+             return;
+        }
 
+        // 这里可以继续执行 match.html 页面的其他初始化逻辑
+        // 比如显示规则弹窗、启动匹配动画等
+
+        // 示例：模拟匹配成功后跳转 (你需要用你的实际逻辑替换)
+        // 确保这个跳转逻辑在你的 match.js 或其他地方被正确触发
+        // 例如，在 match.js 的某个回调或成功事件中执行：
+        // setTimeout(() => {
+        //     console.log("模拟匹配成功，跳转到 game.html");
+        //     window.location.href = 'game.html';
+        // }, 5000); // 假设匹配需要5秒
+
+    });
+  </script>
   <script src="match.js"></script>
 </body>
 

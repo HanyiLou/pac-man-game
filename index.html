@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <title>心理学实验：双人吃豆游戏</title>
     <link rel="stylesheet" href="login.css"> <!-- 引入CSS文件 -->
-    <script src="jQUERY.js"></script>
+    <!-- 如果你的 login.css 或其他脚本依赖 jQuery, 确保它在前面加载 -->
+    <!-- <script src="jQUERY.js"></script> -->
 </head>
 <body>
     <div id="participant-form">
@@ -51,112 +52,61 @@
     </div>
 
     <script>
-        // 生成被试编号
+        // 生成被试编号 (保持不变)
         function generateParticipantId() {
             const now = new Date();
-            
-            // 获取日期部分：年月日
             const year = now.getFullYear();
-            const month = String(now.getMonth() + 1).padStart(2, '0');  // 月份从0开始，需要+1
+            const month = String(now.getMonth() + 1).padStart(2, '0');
             const day = String(now.getDate()).padStart(2, '0');
-            
-            // 获取时间部分：时分
             const hours = String(now.getHours()).padStart(2, '0');
             const minutes = String(now.getMinutes()).padStart(2, '0');
-            
-            // 组合成被试编号：P + 年月日 + 时分
             return `P${year}${month}${day}${hours}${minutes}`;
         }
 
-        // 初始化年月日下拉框
+        // 初始化年月日下拉框 (保持不变)
         function initializeDateSelects() {
             const yearSelect = document.getElementById('birth_year');
             const monthSelect = document.getElementById('birth_month');
             const daySelect = document.getElementById('birth_day');
-
-            // 添加年份选项（1950-当前年份）
             const currentYear = new Date().getFullYear();
             for (let year = currentYear; year >= 1950; year--) {
                 const option = document.createElement('option');
-                option.value = year;
-                option.textContent = year;
+                option.value = year; option.textContent = year;
                 yearSelect.appendChild(option);
             }
-
-            // 添加月份选项
             for (let month = 1; month <= 12; month++) {
                 const option = document.createElement('option');
-                option.value = month;
+                option.value = String(month).padStart(2, '0'); // 改为补零
                 option.textContent = month;
                 monthSelect.appendChild(option);
             }
-
-            // 更新日期选项
             function updateDays() {
+                daySelect.innerHTML = '<option value="">选择日期</option>'; // 清空并添加默认
                 const year = parseInt(yearSelect.value);
                 const month = parseInt(monthSelect.value);
-                const daysInMonth = new Date(year, month, 0).getDate();
-
-                daySelect.innerHTML = '<option value="">选择日期</option>';
-                for (let day = 1; day <= daysInMonth; day++) {
-                    const option = document.createElement('option');
-                    option.value = day;
-                    option.textContent = day;
-                    daySelect.appendChild(option);
+                if (year && month) { // 确保年月已选
+                    const daysInMonth = new Date(year, month, 0).getDate();
+                    const selectedDay = daySelect.value; // 记住之前选中的日期
+                    for (let day = 1; day <= daysInMonth; day++) {
+                        const option = document.createElement('option');
+                        option.value = String(day).padStart(2, '0'); // 改为补零
+                        option.textContent = day;
+                        daySelect.appendChild(option);
+                    }
+                    // 尝试恢复之前的选择
+                    if (selectedDay) {
+                         daySelect.value = selectedDay;
+                         // 如果恢复的值无效（例如从31日切换到2月），则重置
+                         if (!daySelect.value) {
+                             daySelect.value = "";
+                         }
+                    }
                 }
             }
-
             yearSelect.addEventListener('change', updateDays);
             monthSelect.addEventListener('change', updateDays);
-        }
-
-        // 保存用户信息
-        function saveUserInfo(formData) {
-            try {
-                // 检查所有必需的字段是否存在并打印值
-                const requiredFields = ['name', 'gender', 'birth_year', 'birth_month', 'birth_day', 'participant_id', 'game_id'];
-                const userInfo = {};
-                
-                console.log('开始检查表单字段：');
-                for (const field of requiredFields) {
-                    const value = formData.get(field);
-                    console.log(`${field}: ${value}`);
-                    if (!value) {
-                        throw new Error(`请填写${field === 'name' ? '姓名' : 
-                                        field === 'gender' ? '性别' :
-                                        field === 'birth_year' ? '出生年份' :
-                                        field === 'birth_month' ? '出生月份' :
-                                        field === 'birth_day' ? '出生日期' :
-                                        field === 'game_id' ? '游戏ID' : field}`);
-                    }
-                    userInfo[field] = value;
-                }
-
-                // 添加出生日期和时间戳
-                userInfo.birthDate = `${userInfo.birth_year}-${userInfo.birth_month}-${userInfo.birth_day}`;
-                userInfo.timestamp = new Date().toISOString();
-
-                console.log('准备保存的用户信息:', userInfo);
-
-                try {
-                    // 测试localStorage是否可用
-                    localStorage.setItem('test', 'test');
-                    localStorage.removeItem('test');
-                    
-                    // 使用 UTF-8 编码处理中文
-                    const jsonString = JSON.stringify(userInfo);
-                    const encodedData = encodeURIComponent(jsonString);
-                    localStorage.setItem('userInfo', encodedData);
-                    console.log('用户信息已成功保存到localStorage');
-                    
-                    return userInfo;
-                } catch (storageError) {
-                    throw new Error('无法保存数据到本地存储，请确保浏览器没有禁用localStorage');
-                }
-            } catch (error) {
-                console.error('保存用户信息时出错:', error);
-                throw error;
-            }
+            // 初始填充一次日期 (如果月份默认有值)
+            // updateDays(); // 可以考虑去掉，让用户必须选择月份后才出现日期
         }
 
         // 页面加载完成后初始化
@@ -170,33 +120,48 @@
             // 表单提交处理
             document.getElementById('userInfoForm').addEventListener('submit', function(e) {
                 e.preventDefault(); // 阻止表单默认提交
-                
+
                 try {
                     console.log('表单提交开始');
-                    // 检查表单验证
                     if (this.checkValidity()) {
                         console.log('表单验证通过');
                         const formData = new FormData(this);
-                        
-                        // 打印所有表单数据
-                        console.log('表单数据:');
-                        for (const [key, value] of formData.entries()) {
-                            console.log(`${key}: ${value}`);
-                        }
+                        const userInfo = {};
 
-                        const userInfo = saveUserInfo(formData);
-                        console.log('用户信息保存成功，准备跳转...');
-                        
-                        // 直接跳转到match.html
-                        window.location.replace('match.html');
+                        userInfo.name = formData.get('name');
+                        userInfo.gender = formData.get('gender');
+                        userInfo.birth_year = formData.get('birth_year');
+                        userInfo.birth_month = formData.get('birth_month');
+                        userInfo.birth_day = formData.get('birth_day');
+                        userInfo.participant_id = formData.get('participant_id'); // 获取生成的ID
+                        userInfo.game_id = formData.get('game_id');
+                        // 组合完整的出生日期
+                        userInfo.birthDate = `${userInfo.birth_year}-${userInfo.birth_month}-${userInfo.birth_day}`;
+                        // 记录实验开始时间
+                        userInfo.experimentStartTime = new Date().toISOString();
+
+                        // --- 存储到 localStorage ---
+                        if (typeof(Storage) !== "undefined") {
+                            // 直接存储 JSON 字符串，无需编码
+                            localStorage.setItem('participantInfo', JSON.stringify(userInfo));
+                            console.log('用户信息已保存到 localStorage:', userInfo);
+
+                            // --- 跳转到下一页 ---
+                            window.location.href = 'match.html'; // 使用 href 跳转
+
+                        } else {
+                            alert("抱歉，您的浏览器不支持 Web Storage，无法继续实验。");
+                        }
+                        // --- End of Storage and Redirect ---
 
                     } else {
                         console.log('表单验证失败，请填写所有必需字段');
-                        this.reportValidity();
+                        // 浏览器会自动显示验证提示，或者你可以自定义提示
+                        this.reportValidity(); // 触发浏览器内置验证提示
                     }
                 } catch (error) {
                     console.error('提交处理时出错:', error);
-                    alert(error.message || '提交信息时出现错误，请重试');
+                    alert('提交信息时出现错误，请重试。\n错误: ' + error.message);
                 }
             });
         });
