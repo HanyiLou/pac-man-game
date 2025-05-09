@@ -8,6 +8,7 @@
 	<link rel="stylesheet" href="./static/style/index.css">
 	<script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
     <style>
+        
         /* 为导出按钮添加样式 */
         #exportButton {
             position: fixed; /* 固定位置 */
@@ -21,7 +22,7 @@
             cursor: pointer;
             font-size: 14px;
             z-index: 1001; /* 确保在其他元素之上 */
-           /*  display: none; /* 初始隐藏，游戏结束后显示 */ */
+            display: none; /* 初始隐藏，游戏结束后显示 */ 
             font-family: sans-serif; /* 使用更通用的字体 */
         }
         #exportButton:disabled {
@@ -63,14 +64,14 @@
 		<div class="modal-content">
 		  <span class="close" id="close-rules">&times;</span>
 		  <h2>游戏规则</h2>
-		  <p>您将与另一位参与者共同完成吃豆任务。请仔细阅读以下规则：</p>
+		  <p style="text-align: center;font-size: 18px;margin-bottom: 10px;"><strong style="font-weight: bold;">您将与另一位玩家共同完成吃豆任务。请仔细阅读以下内容：</strong></p>
 		  <ul>
-			<li>每轮游戏，您和对方将合作把地图上的豆吃完。</li>
-			<li>您可以通过键盘上的"↑""↓""←""→"键来控制您的角色移动。</li>
-			<li>游戏没有限时，<strong style="color: red;">越快完成获得越多额外分数</strong>。</li>
-			<li>您和对方每人在吃完地图上总豆数的一半后，<strong>可以选择等待对方完成。或者继续操控角色帮助对方吃豆</strong>。</li>
-			<li>游戏共进行10轮，最终统计总得分。</li>
-			<li>最后收益根据总得分计算，您和对方将<strong style="color: red;">平分收益</strong>。</li>
+			<li> ■ 每轮游戏，您和对方将合作把地图上的豆吃完。</li>
+			<li> ■ 您可以通过键盘上的"↑""↓""←""→"键来控制您的角色移动。</li>
+			<li> ■ 游戏<strong style="font-weight: bold;color: red;">越快完成</strong>获得<strong style="font-weight: bold;color: red;">越多</strong>额外分数。</li>
+			<li> ■ 您和对方每人在吃完地图上总豆数的一半后，<strong>可以选择等待对方完成；或者继续操控角色帮助对方吃豆</strong>。</li>
+			<li> ■ 游戏共进行10轮，最终统计总得分。</li>
+			<li> ■ 最后收益根据总得分计算，您和对方将<strong style="font-weight: bold;color: red;">平分收益</strong>。</li>
 		  </ul>
 		  <div class="button-container"> <!-- 添加按钮容器 -->
 			<button id="know-rules" style="display: none;">我已了解</button>

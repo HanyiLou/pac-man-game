@@ -565,6 +565,16 @@ rulesLink.addEventListener("click", (e) => {
 	
 	var game = new Game('canvas');
 	var roundData = []; // <--- 添加这行：用于存储每轮结果的数组
+	var npc_cumulative_score = 0; // NPC的累计总分
+	// 用于存储传递给回合间总结画面的数据 (简化版)
+	var currentRoundSummaryData = {
+		completedRoundNumber: 0,    // 刚刚完成的回合数
+		playerRoundScore: 0,        // 玩家 *本回合* 的得分  <-- 修改
+		npcRoundScore: 0,           // NPC *本回合* 的得分   <-- 修改
+		totalBeansInRound: 0,       // 本回合总豆子数 (可选，用于显示如 "你吃了 X / Y 个豆子")
+		nextStageIndexToGoTo: 0,    // 总结画面后要跳转到的下一个场景索引
+		isLastGameRound: false      // 是否是最后一个游戏回合
+	};
 	//启动页
 	(function () {
 		var stage = game.createStage();
@@ -609,11 +619,11 @@ rulesLink.addEventListener("click", (e) => {
 			frames: 28,
 			draw: function (context) {
 				if (this.times % 2) {
-					context.font = 'bold 14px PressStart2P';
+					context.font = 'bold 18px PressStart2P';
 					context.textAlign = 'center';
 					context.textBaseline = 'middle';
 					context.fillStyle = '#AAA';
-					context.fillText('Press Enter to start', this.x, this.y);
+					context.fillText('请按 [Enter] 开始游戏', this.x, this.y);
 				}
 			}
 		});
@@ -650,7 +660,7 @@ rulesLink.addEventListener("click", (e) => {
         "很好！现在请按 → 键，向右移动。",             // Step 2
         "试试按 ↑ 键向上移动。",                    // Step 3
         "最后，请按 ↓ 键向下移动。",                  // Step 4
-        "太棒了！你已掌握基本移动。\n\n目标：与队友合作吃掉所有豆子。\n得分：吃豆得分，越快越好，平分收益。\n\n按 [Enter] 键准备开始第一回合！", // Step 5 & 6 合并提示
+        "太棒了！你已掌握基本移动。\n\n目标：与队友合作吃掉所有豆子。\n\n得分：吃豆得分，越快越好，平分收益。\n\n按 [Enter] 键开始第一回合！", // Step 5 & 6 合并提示
     ];
 
     // 创建或更新教学文本的函数
@@ -658,10 +668,10 @@ rulesLink.addEventListener("click", (e) => {
         if (!instructionText) {
             instructionText = stage.createItem({
                 x: game.width / 2,
-                y: game.height * 0.6, // 文本位置靠下
+                y: game.height * 0.5, // 文本位置靠下
                 draw: function (context) {
                     if (demoStep < texts.length && !isAnimating) { // 只在非动画时显示当前步骤文本
-                        context.font = '18px sans-serif';
+                        context.font = 'bold 25px sans-serif';
                         context.textAlign = 'center';
                         context.textBaseline = 'middle';
                         context.fillStyle = '#DDD';
@@ -671,12 +681,12 @@ rulesLink.addEventListener("click", (e) => {
                             context.fillText(line, this.x, this.y + index * 25); // 调整行间距
                         });
 
-                        // 在最后一步添加闪烁提示
+                        /* // 在最后一步添加闪烁提示
                         if (demoStep === 5 && this.times % 28 < 14) { // 使用 stage 的 times 实现闪烁
                              context.font = 'bold 16px PressStart2P';
                              context.fillStyle = '#AAA';
                              context.fillText('Press Enter to start Round 1', this.x, this.y + lines.length * 25 + 20);
-                        }
+                        } */
                     }
                 }
             });
@@ -782,19 +792,28 @@ rulesLink.addEventListener("click", (e) => {
          }
     };
 
-    // 标题 (保持不变)
-    stage.createItem({
-        x: game.width / 2, y: game.height * .15, // 稍微上移标题
-        draw: function (context) {
-            context.font = 'bold 36px PressStart2P';
-            context.textAlign = 'center';
-            context.textBaseline = 'middle';
-            context.fillStyle = '#FFF';
-            context.fillText('游戏教学', this.x, this.y);
-        }
-    });
+	// 标题 (保持不变)
+	stage.createItem({
+		x: game.width / 2, y: game.height * .1, // 稍微上移标题
+		draw: function (context) {
+			// 计算文本宽度和高度，来绘制背景框
+			const text = '游戏教学';
+			const padding = 10; // 文本框内边距
+			context.font = 'bold 20px PressStart2P';
+			const textWidth = context.measureText(text).width;
+			const textHeight = 20; // 字体高度大概是20px
 
-    // 事件绑定
+			// 绘制背景框
+			context.fillStyle = '#FF6347'; // 你可以选择其他颜色
+			context.fillRect(this.x - textWidth / 2 - padding, this.y - textHeight / 2 - padding, textWidth + padding * 2, textHeight + padding * 2);
+
+			// 绘制文本
+			context.fillStyle = '#FFF'; // 字体颜色
+			context.fillText(text, this.x, this.y);
+		}
+	});
+
+	// 事件绑定
     stage.bind('keydown', function (e) {
         if (isAnimating) return; // 动画播放中，忽略输入
 
@@ -977,41 +996,61 @@ rulesLink.addEventListener("click", (e) => {
 						});
 
 						// 检查是否所有豆子都被吃完
-						if (remainingBeans <= 0 && stage.status === 1) { // 确保只触发一次且在活动状态下
-							// --- 记录日志: 回合结束 (所有豆子吃完) ---
-                            const roundEndTime = Date.now(); // **记录回合结束时间戳**
-                            const roundDuration = roundEndTime - roundStartTimestamp; // **计算回合用时**
-							// --- 记录回合数据 --- <--- 添加此代码块
+						if (remainingBeans <= 0 && stage.status === 1) {
+                            stage.status = 0; // 立刻将当前游戏场景标记为非活动
+
+                            const roundEndTime = Date.now();
+                            const roundDuration = roundEndTime - roundStartTimestamp;
+
+                            // 记录本回合数据到 roundData (用于最终总结表格)
                             roundData.push({
-                                round: stage.roundNumber,      // 当前回合数
-                                playerBeans: player.score,     // 玩家在本回合吃的豆数
-                                npcBeans: npcRoundScore        // NPC 在本回合吃的豆数
+                                round: stage.roundNumber,
+                                playerBeans: player.score, // 玩家 *本回合* 的得分
+                                npcBeans: npcRoundScore    // NPC *本回合* 的得分
                             });
-                            // --- 结束记录回合数据 ---
-                            // --- 记录日志: 回合结束 ---
-							if (typeof logGameEvent === 'function') {
+
+                            // 更新全局累计总分 (这部分逻辑不变，为最终结算做准备)
+                            all_scores += player.score;
+                            npc_cumulative_score += npcRoundScore;
+                            // total_scores 已在关卡开始时累加本关豆子数
+
+                            if (typeof logGameEvent === 'function') {
                                  logGameEvent('RoundEnd', {
                                      round: stage.roundNumber,
-                                     reason: 'all_beans_eaten', // 结束原因
-									 playerRoundScore: player.score, // **记录玩家本回合得分**
-									 npcRoundScore: npcRoundScore, // **记录NPC本回合得分**
-									 endTimestamp: roundEndTime, // 记录结束时间戳
-									 durationMs: roundDuration // **记录回合用时**
+                                     reason: 'all_beans_eaten',
+                                     playerRoundScore: player.score, // 本回合得分
+                                     npcRoundScore: npcRoundScore,   // 本回合得分
+                                     // 累计得分也记录，但不一定在回合总结界面显示
+                                     playerCumulativeScore: all_scores,
+                                     npcCumulativeScore: npc_cumulative_score,
+                                     teamCumulativeScore: all_scores + npc_cumulative_score,
+                                     teamPotentialCumulativeScore: total_scores,
+                                     endTimestamp: roundEndTime,
+                                     durationMs: roundDuration
                                  });
-                             }
-							all_scores += player.score; // 累加玩家的总得分
-							stage.status = 0; // 在切换前将当前舞台标记为非活动
-							// 计算下一关索引
-							const nextStageIndex = stage.index + 1;
+                            }
 
-							// 检查是否还有更多关卡
-							if (nextStageIndex < _COIGIG.length + 2) { // +2因为前两页
-								game.setStage(nextStageIndex);
-							} else {
-								// 没有更多关卡，跳转到结束画面
-								game.setStage(_COIGIG.length + 2);
-							}
-						
+                            // 为回合间总结画面准备数据 (只传本回合的)
+                            currentRoundSummaryData.completedRoundNumber = stage.roundNumber;
+                            currentRoundSummaryData.playerRoundScore = player.score; // 传递本回合玩家得分
+                            currentRoundSummaryData.npcRoundScore = npcRoundScore;   // 传递本回合NPC得分
+                            currentRoundSummaryData.totalBeansInRound = totalBeans;  // totalBeans 是本回合总豆数
+
+                            const nextPotentialGameStageIndex = stage.index + 1;
+
+                            if (stage.index === (_COIGIG.length - 1 + 2) ) { // 检查是否是最后一个游戏关卡
+                                currentRoundSummaryData.isLastGameRound = true;
+                                currentRoundSummaryData.nextStageIndexToGoTo = _COIGIG.length + 2 + 1; // 跳到最终结束画面
+                            } else {
+                                currentRoundSummaryData.isLastGameRound = false;
+                                currentRoundSummaryData.nextStageIndexToGoTo = nextPotentialGameStageIndex; // 跳到下一个游戏关卡
+                            }
+
+                            // 切换到“回合总结”场景
+                            game.setStage(_COIGIG.length + 2);
+
+                            return;
+                        
 						}
 
 						// 检查玩家是否吃到了一半的豆子 (决策点)
@@ -1283,7 +1322,7 @@ rulesLink.addEventListener("click", (e) => {
 					vector: { x: 12 + i, y: 14 },
 					type: 2,
 					frames: 10,
-					speed: 10,//NPC的速度
+					speed: 1,//NPC的速度
 					timeout: Math.floor(Math.random() * 120),
 					status: 1, // 初始状态 (正常)
                     _id: i, // 明确分配 ID 用于日志记录
@@ -1613,6 +1652,111 @@ rulesLink.addEventListener("click", (e) => {
 		});
 
 	})();
+	  // 回合间总结场景 (场景索引: _COIGIG.length + 2)
+	  (function () {
+        var stage = game.createStage({
+            index: _COIGIG.length + 2,
+            init: function() {
+                this.status = 1;
+                if (typeof logGameEvent === 'function') {
+                    logGameEvent('RoundSummaryDisplayed', { // 日志内容可以保持详细
+                        roundCompleted: currentRoundSummaryData.completedRoundNumber,
+                        playerRoundScore: currentRoundSummaryData.playerRoundScore,
+                        npcRoundScore: currentRoundSummaryData.npcRoundScore,
+                        timestamp: Date.now()
+                    });
+                }
+            },
+            update: function() { /* ... */ }
+        });
+
+        // "第 X 回合完成!" 标题
+        stage.createItem({
+            x: game.width / 2,
+            y: game.height * .2,
+            draw: function(context) {
+                context.font = 'bold 32px PressStart2P';
+                context.fillStyle = '#FFF';
+                context.textAlign = 'center';
+                context.fillText('第 ' + currentRoundSummaryData.completedRoundNumber + ' 回合完成!', this.x, this.y);
+            }
+        });
+
+        // 显示本回合得分信息
+        stage.createItem({
+            x: game.width / 2,
+            y: game.height * .35,
+            draw: function(context) {
+                context.font = '20px PressStart2P';
+                context.fillStyle = '#FFF';
+                context.textAlign = 'center';
+                let currentY = this.y;
+
+                context.fillText('本回合得分:', this.x, currentY);
+                currentY += 40;
+
+                context.textAlign = 'left';
+                let textStartX = this.x - 180;
+
+                // 显示本回合玩家得分
+                context.fillText('  你的得分: ' + currentRoundSummaryData.playerRoundScore, textStartX, currentY);
+                currentY += 30;
+                // 显示本回合队友得分
+                context.fillText('  队友得分: ' + currentRoundSummaryData.npcRoundScore, textStartX, currentY);
+                currentY += 30;
+                // (可选) 显示本回合团队得分
+                let roundTeamScore = currentRoundSummaryData.playerRoundScore + currentRoundSummaryData.npcRoundScore;
+                context.fillText('  团队得分: ' + roundTeamScore, textStartX, currentY);
+                currentY += 30;
+                context.fillText('  \n\n按[Enter]键继续', textStartX, currentY);
+
+
+                currentY += 60;
+                context.textAlign = 'center';
+                context.fillStyle = '#AAA';
+                // (闪烁提示的代码保持不变)
+                var stageTimes = 0;
+                if (game && game.getStages() && game.getStages()[0] && game.getStages()[0].items && game.getStages()[0].items[0]) {
+                    stageTimes = game.getStages()[0].items[0].times || 0;
+                }
+                if (this.times === undefined) this.times = stageTimes; else this.times = stageTimes;
+
+                if (this.times % 28 < 14) {
+                    context.fillText('按回车键继续', this.x, currentY);
+                }
+            }
+        });
+        // (确保闪烁 Item 的 times 更新逻辑存在且正确)
+        const textItemForFlicker = stage.items[stage.items.length - 1];
+        if (textItemForFlicker) {
+            textItemForFlicker.times = 0;
+            const originalDrawFunc = textItemForFlicker.draw;
+            textItemForFlicker.draw = function(ctxPass) {
+                var gameInstanceTimes = 0;
+                if(typeof game !== 'undefined' && game.getStages && game.getStages().length > 0 && game.getStages()[0].items.length > 0){
+                   gameInstanceTimes = game.getStages()[0].items[0].times;
+                }
+                this.times = gameInstanceTimes || 0;
+                originalDrawFunc.call(this, ctxPass);
+            };
+        }
+
+        // (键盘事件绑定保持不变，用于进入下一关或结束游戏)
+        stage.bind('keydown', function(e) {
+            if (e.keyCode === 13) { // 回车键
+                if (typeof logGameEvent === 'function') {
+                    logGameEvent('ContinueFromRoundSummary', {
+                        completedRound: currentRoundSummaryData.completedRoundNumber,
+                        proceedingToStage: currentRoundSummaryData.nextStageIndexToGoTo,
+                        timestamp: Date.now()
+                    });
+                }
+                // player.score 和 npcRoundScore 会在下一个游戏关卡的 init 中被重置为0
+                game.setStage(currentRoundSummaryData.nextStageIndexToGoTo);
+            }
+        });
+
+    })(); // “回合间总结场景”创建结束
 	//结束画面
 	(function () {
 		var stage = game.createStage({
